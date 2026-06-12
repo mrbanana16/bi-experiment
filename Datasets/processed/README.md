@@ -1,122 +1,91 @@
+# 电商用户行为数据集说明
+
+本数据集来源于公开电商平台用户行为记录，经过清洗和特征工程后，形成以下核心数据文件：
+
+1. **事件级数据集** (`preprocessed.csv`)：每一行代表用户的一次行为（浏览、加购、购买等），包含原始字段及衍生时间特征。
+2. **会话级特征数据集** (`session_based_features.csv`)：每一行代表一个用户会话（`user_session`），聚合了会话内的行为统计特征，用于用户分群、漏斗分析和推荐策略评估。
+3. **Apriori 事务表** (`transactions_for_apriori.csv`)：每一行代表一个包含 2+ 品类的用户会话，用于关联规则挖掘。
 
 ---
 
-# 电商用户行为数据预处理说明
+## 一、事件级数据集 (`preprocessed.csv`)
 
-本项目针对电商订单数据进行预处理，生成三个核心文件，分别用于**描述性统计分析**、**用户分群（K-Means）** 和**关联规则挖掘（Apriori/FP-Growth）**。
-
-## 文件清单
-
-| 文件名 | 用途 |
-|--------|------|
-| `data_preprocessed_full.csv` | 增强后的原始数据，含原始字段 + 衍生特征 + 编码字段 |
-| `user_behavioral_features_for_clustering.csv` | 用户级聚合特征表，每用户一行，用于 K-Means 聚类 |
-| `transactions_for_apriori.csv` | 事务表，每订单一行，按订单聚合商品类别列表，用于关联规则挖掘 |
-
----
-
-## 1. data_preprocessed_full.csv
+### 文件描述
+- 行数：92,793 行（经缺失值删除和去重后）
+- 每行：一次用户事件（`event_type`）
+- 数据来源：`raw/Dataset.csv` 经清洗、时间字段提取生成
 
 ### 字段说明
 
 | 字段名 | 类型 | 描述 |
 |--------|------|------|
-| `Order_ID` | string | 订单唯一标识 |
-| `Customer_ID` | string | 客户唯一标识 |
-| `Date` | datetime | 交易日期 |
-| `Age` | int | 客户年龄 |
-| `Gender` | string | 性别（Female / Male / Other） |
-| `City` | string | 客户所在城市 |
-| `Product_Category` | string | 商品类别（如 Electronics, Fashion） |
-| `Unit_Price` | float | 商品单价 |
-| `Quantity` | int | 购买数量 |
-| `Discount_Amount` | float | 折扣金额 |
-| `Total_Amount` | float | 实际支付金额 |
-| `Device_Type` | string | 设备类型（Mobile / Desktop / Tablet） |
-| `Session_Duration_Minutes` | int | 会话时长（分钟） |
-| `Pages_Viewed` | int | 浏览页面数 |
-| `Is_Returning_Customer` | bool | 是否为回头客（True/False） |
-| `Delivery_Time_Days` | int | 配送天数 |
-| `Customer_Rating` | int | 客户评分（1-5） |
-
-**衍生字段（预处理新增）**
-
-| 字段名 | 类型 | 描述 |
-|--------|------|------|
-| `Year` | int | 年份 |
-| `Month` | int | 月份 |
-| `Day` | int | 日 |
-| `Weekday` | int | 星期几（0=周一，6=周日） |
-| `Is_Weekend` | int | 是否周末（1=周末，0=工作日） |
-| `Age_Group` | string | 年龄分组：<18, 18-24, 25-34, 35-44, 45-59, 60+ |
-| `Avg_Price_Per_Unit` | float | 平均每件商品价格 = `Total_Amount / Quantity` |
-| `Discount_Rate` | float | 折扣率 = `Discount_Amount / (Unit_Price * Quantity)`，限制 [0,1] |
-| `Pages_Per_Minute` | float | 每分钟浏览页数 = `Pages_Viewed / Session_Duration_Minutes`，无穷值/缺失值处理为 0 |
-| `Gender_Code` | int | 性别编码（0=Female, 1=Male, 2=Other） |
-| `Returning_Code` | int | 回头客编码（1=True, 0=False） |
-| `Device_Code` | int | 设备编码（0=Desktop, 1=Mobile, 2=Tablet） |
-| `Payment_Bank Transfer` | bool | 支付方式：银行转账 |
-| `Payment_Cash on Delivery` | bool | 支付方式：货到付款 |
-| `Payment_Credit Card` | bool | 支付方式：信用卡 |
-| `Payment_Debit Card` | bool | 支付方式：借记卡 |
-| `Payment_Digital Wallet` | bool | 支付方式：数字钱包 |
-
-> 注：支付方式为 One‑Hot 编码，每列取值为 True/False。
+| `event_time` | datetime | 事件发生时间（UTC），已去除 "UTC" 后缀，格式 `YYYY-MM-DD HH:MM:SS` |
+| `event_type` | str | 事件类型：`view`（浏览）、`cart`（加入购物车）、`purchase`（购买） |
+| `product_id` | int | 商品唯一标识 |
+| `category_id` | int | 商品类别唯一标识（数字型层级代码） |
+| `category_code` | str | 商品类别的英文路径，例如 `electronics.smartphone` |
+| `brand` | str | 商品品牌 |
+| `price` | float | 商品价格（美元） |
+| `user_id` | int | 用户唯一标识 |
+| `user_session` | str | 会话唯一标识（UUID 格式） |
+| `Day` | int | 事件发生日期的"日"部分（1‑31） |
+| `Hour` | int | 事件发生的小时（0‑23） |
+| `Weekday` | int | 星期几，周一为 0，周日为 6 |
+| `Is_Weekend` | bool | 是否为周末（`True` 表示周六或周日） |
+| `At_night` | bool | 是否为夜间时段（小时 ≤ 6 或 ≥ 17） |
+| `During_the_day` | bool | 是否为白天时段（6 < 小时 < 17） |
 
 ---
 
-## 2. user_behavioral_features_for_clustering.csv
+## 二、会话级特征数据集 (`session_based_features.csv`)
 
-以 `Customer_ID` 为分组键，对每个用户的行为数据进行聚合，生成用户级特征表，用于聚类分析。
+### 文件描述
+- 形状：(88,070, 10)
+- 每行：一个用户会话的聚合统计特征
+- 生成方式：基于事件级数据集按 `user_session` 分组聚合
 
 ### 字段说明
 
 | 字段名 | 类型 | 描述 |
 |--------|------|------|
-| `Customer_ID` | string | 客户唯一标识 |
-| `Total_Amount` | float | 总消费金额（该用户所有订单金额之和） |
-| `Age` | int | 用户年龄（取第一次出现值） |
-| `Gender_Code` | int | 性别编码（0=Female, 1=Male, 2=Other） |
-| `Session_Duration_Minutes` | float | 平均会话时长（分钟） |
-| `Pages_Viewed` | float | 平均浏览页数 |
-| `Returning_Code` | int | 是否回头客（1=True, 0=False） |
-| `Delivery_Time_Days` | float | 平均配送天数 |
-| `Customer_Rating` | float | 平均评分 |
-| `Discount_Rate` | float | 平均折扣率 |
-| `Pages_Per_Minute` | float | 平均每分钟浏览页数（浏览效率） |
-| `Is_Weekend` | float | 周末购买比例（0~1） |
-| `Spending_Level` | string | 消费分层：按 `Total_Amount` 四分位数划分为 `Low`, `Medium`, `High`, `Very High` |
-
-> 注：除明确标注 `first` 的字段外，其余数值型字段均为订单级别的简单平均。
+| `user_session` | str | 会话唯一标识 |
+| `event_count` | int | 该会话内事件总次数 |
+| `unique_products` | int | 会话内浏览/购买的不同商品数量 |
+| `has_purchase` | bool | 会话是否包含至少一次购买事件 |
+| `cart_count` | int | 会话内添加购物车的次数 |
+| `purchase_count` | int | 会话内购买次数 |
+| `session_duration_min` | float | 会话时长（分钟） |
+| `purchase_amount` | float | 会话内购买总金额（若无购买则为 0） |
+| `cart_to_purchase` | bool | 会话内是否存在先加购后购买的行为序列 |
+| `unique_categories` | int | 会话内涉及的不同商品类别数 |
 
 ---
 
-## 3. transactions_for_apriori.csv
+## 三、Apriori 事务表 (`transactions_for_apriori.csv`)
 
-按订单聚合商品类别列表，每个订单对应一行，格式符合关联规则挖掘库（如 `mlxtend`、`efficient_apriori`）的输入要求。
+### 文件描述
+- 每行：一个包含 2+ 商品类别的用户会话
+- 用途：直接用于 Apriori 算法的关联规则挖掘
 
 ### 字段说明
 
 | 字段名 | 类型 | 描述 |
 |--------|------|------|
-| `Order_ID` | string | 订单唯一标识 |
-| `Item_Category` | string | 该订单购买的商品类别列表（Python 列表的字符串表示，如 `"['Electronics','Toys']"`） |
-
-> 读取时建议使用 `import ast; df['Item_Category'] = df['Item_Category'].apply(ast.literal_eval)` 转换为原生列表。
+| `user_session` | str | 会话唯一标识 |
+| `items` | str | 商品类别列表（Python 列表格式字符串，可用 `eval()` 转换） |
 
 ---
 
-## 预处理脚本摘要
+## 四、数据质量说明
 
-```python
-# 主要预处理步骤
-1. 日期解析 → 提取年、月、日、星期、是否周末
-2. 年龄分箱 → Age_Group
-3. 计算衍生指标：Avg_Price_Per_Unit, Discount_Rate, Pages_Per_Minute
-4. 分类变量编码：
-   - Label Encoding：Gender_Code, Returning_Code, Device_Code
-   - One‑Hot Encoding：Payment_Method
-5. 用户级别聚合 → user_features（含 Spending_Level 分层）
-6. 事务数据构造 → transactions（Order_ID → list of Product_Category）
-```
+- 缺失值处理：`category_code` 和 `brand` 中有缺失的行已全部删除
+- 重复值处理：已删除完全重复的事件记录
+- 时间字段：`event_time` 已统一为 datetime 类型，并去除了原始字符串中的 "UTC" 字样
 
+---
+
+## 五、文件版本与维护
+
+- 创建日期：2026‑06‑12
+- 最后更新：2026‑06‑13
+- 文件编码：UTF‑8

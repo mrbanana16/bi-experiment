@@ -1,0 +1,68 @@
+support,itemsets
+0.2377521613832853,frozenset({'electronics.smartphone'})
+0.09510086455331412,frozenset({'electronics.clocks'})
+0.08789625360230548,frozenset({'computers.notebook'})
+0.08213256484149856,frozenset({'apparel.shoes'})
+0.08069164265129683,frozenset({'electronics.audio.headphone'})
+0.0792507204610951,frozenset({'apparel.shoes.keds'})
+0.07060518731988473,frozenset({'appliances.kitchen.refrigerators'})
+0.069164265129683,frozenset({'electronics.video.tv'})
+0.06340057636887608,frozenset({'computers.desktop'})
+0.06051873198847262,frozenset({'appliances.kitchen.washer'})
+0.059077809798270896,frozenset({'auto.accessories.player'})
+0.053314121037463975,frozenset({'appliances.environment.vacuum'})
+0.04755043227665706,frozenset({'electronics.audio.subwoofer'})
+0.0446685878962536,"frozenset({'electronics.smartphone', 'electronics.clocks'})"
+0.03890489913544669,"frozenset({'apparel.shoes.keds', 'apparel.shoes'})"
+0.037463976945244955,frozenset({'accessories.bag'})
+0.03602305475504323,frozenset({'furniture.living_room.cabinet'})
+0.03170028818443804,frozenset({'auto.accessories.videoregister'})
+0.03170028818443804,"frozenset({'auto.accessories.player', 'electronics.audio.subwoofer'})"
+0.03170028818443804,"frozenset({'electronics.smartphone', 'electronics.audio.headphone'})"
+0.02881844380403458,frozenset({'auto.accessories.alarm'})
+0.027377521613832854,frozenset({'furniture.bedroom.bed'})
+0.024495677233429394,frozenset({'appliances.kitchen.meat_grinder'})
+0.023054755043227664,frozenset({'electronics.telephone'})
+0.021613832853025938,frozenset({'appliances.kitchen.blender'})
+0.021613832853025938,frozenset({'appliances.kitchen.kettle'})
+0.021613832853025938,"frozenset({'electronics.smartphone', 'computers.notebook'})"
+0.021613832853025938,"frozenset({'computers.desktop', 'computers.notebook'})"
+0.021613832853025938,frozenset({'computers.components.cpu'})
+0.020172910662824207,frozenset({'construction.tools.drill'})
+0.020172910662824207,frozenset({'electronics.tablet'})
+0.020172910662824207,frozenset({'computers.components.videocards'})
+0.020172910662824207,"frozenset({'electronics.video.tv', 'electronics.smartphone'})"
+0.018731988472622477,frozenset({'appliances.kitchen.oven'})
+0.018731988472622477,frozenset({'apparel.costume'})
+0.018731988472622477,frozenset({'computers.peripherals.monitor'})
+0.018731988472622477,frozenset({'electronics.audio.acoustic'})
+0.01729106628242075,frozenset({'appliances.iron'})
+0.01729106628242075,"frozenset({'electronics.telephone', 'electronics.smartphone'})"
+0.01729106628242075,frozenset({'computers.components.motherboard'})
+0.01585014409221902,frozenset({'computers.components.hdd'})
+0.01585014409221902,frozenset({'construction.tools.saw'})
+0.01585014409221902,"frozenset({'electronics.clocks', 'electronics.audio.headphone'})"
+0.01585014409221902,frozenset({'furniture.kitchen.table'})
+0.01585014409221902,"frozenset({'appliances.kitchen.refrigerators', 'appliances.kitchen.washer'})"
+0.01585014409221902,frozenset({'appliances.kitchen.hob'})
+0.01440922190201729,frozenset({'kids.toys'})
+0.01440922190201729,frozenset({'appliances.kitchen.mixer'})
+0.01440922190201729,frozenset({'appliances.kitchen.microwave'})
+0.01440922190201729,frozenset({'appliances.kitchen.hood'})
+0.01440922190201729,frozenset({'furniture.living_room.sofa'})
+0.01440922190201729,"frozenset({'furniture.bedroom.bed', 'furniture.living_room.cabinet'})"
+0.012968299711815562,frozenset({'accessories.wallet'})
+0.012968299711815562,"frozenset({'auto.accessories.videoregister', 'auto.accessories.alarm'})"
+0.012968299711815562,frozenset({'computers.peripherals.mouse'})
+0.012968299711815562,frozenset({'apparel.underwear'})
+0.011527377521613832,frozenset({'apparel.dress'})
+0.011527377521613832,frozenset({'appliances.kitchen.coffee_machine'})
+0.011527377521613832,frozenset({'computers.components.cooler'})
+0.011527377521613832,"frozenset({'construction.tools.saw', 'construction.tools.drill'})"
+0.010086455331412104,frozenset({'computers.components.memory'})
+0.010086455331412104,frozenset({'apparel.jeans'})
+0.010086455331412104,frozenset({'computers.components.power_supply'})
+0.010086455331412104,frozenset({'kids.skates'})
+0.010086455331412104,frozenset({'kids.carriage'})
+0.010086455331412104,"frozenset({'electronics.video.tv', 'appliances.kitchen.washer'})"
+0.010086455331412104,"frozenset({'electronics.smartphone', 'electronics.tablet'})"

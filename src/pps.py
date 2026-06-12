@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 # ==================== 1. 读取数据 ====================
-df = pd.read_csv("./Datasets/raw/Opt 1/ecommerce_customer_behavior_dataset.csv")
+df = pd.read_csv("./Datasets/raw/Dataset.csv")
 print("原始数据形状:", df.shape)
 print("缺失值统计:\n", df.isnull().sum())
 
@@ -74,8 +74,8 @@ transactions = df.groupby('Order_ID')['Product_Category'].apply(list).reset_inde
 transactions.columns = ['Order_ID', 'Item_Category']
 
 # ==================== 8. 保存预处理结果 ====================
-df.to_csv('./Datasets/processed/data_preprocessed_full.csv', index=False)          # 增强后的原始数据
-user_features.to_csv('./Datasets/processed/user_behavioral_features_for_clustering.csv', index=False)  # 用户特征表 用于clustering
+df.to_csv('./Datasets/processed/preprocessed.csv', index=False)          # 增强后的原始数据
+user_features.to_csv('./Datasets/processed/session_based_features.csv', index=False)  # 用户特征表 用于clustering
 transactions.to_csv('./Datasets/processed/transactions_for_apriori.csv', index=False)       # 事务表 用于asso
 
 print("预处理完成！")
