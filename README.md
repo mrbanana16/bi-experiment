@@ -81,11 +81,13 @@ project/
 ├─ notebook/            # Jupyter Notebook（可选，需保留分步执行代码或运行结果时编写）
 │
 ├─ src/                 # 源代码
+│   └─ ai-module/       # AI 智能分析助手前后端模块
 │
 ├─ result/              # 输出结果
 │   ├─ figures/         # 图表
 │   ├─ reports/         # 分析报告
-│   └─ models/          # 模型结果
+│   ├─ models/          # 模型结果
+│   └─ ai-history/      # AI 助手历史对话记录
 │
 ├─ requirements.txt     # 项目依赖
 ├─ .gitignore

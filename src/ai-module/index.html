@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>电商数据智能分析助手</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+    <main class="chat-layout">
+      <header class="chat-header">
+        <div class="header-title">
+          <div class="title-row">
+            <h1>电商数据智能分析助手</h1>
+          </div>
+          <div class="header-meta">
+            <span id="selectedList">已选择 0 个结果</span>
+            <button class="plain-button" type="button" id="openSelectorButton">补充文件</button>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button class="secondary-button" type="button" id="openHistoryButton">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M13 3a9 9 0 1 1-8.5 6H2l3.8-4L9.6 9H6.7A7 7 0 1 0 13 5v4l3.2 2.1-1.1 1.7L11 10V3h2Z"></path>
+            </svg>
+            <span>历史对话</span>
+          </button>
+          <button class="danger-button" type="button" id="clearChatButton">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 7h2v8h-2v-8Zm4 0h2v8h-2v-8ZM7 9h10l-.7 11H7.7L7 9Z"></path>
+            </svg>
+            <span>清空对话</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="messages" id="messages" aria-live="polite"></section>
+
+      <footer class="composer">
+        <div class="quick-panel" aria-label="快捷指令">
+          <div class="quick-actions">
+            <h2>快捷指令</h2>
+            <button type="button" data-question="请概括当前所选分析结果的核心发现，并按重要性排序。">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 4h14v16H5V4Zm2 2v12h10V6H7Zm2 3h6v2H9V9Zm0 4h6v2H9v-2Z"></path>
+              </svg>
+              <span>概括发现</span>
+            </button>
+            <button type="button" data-question="请基于所选结果给出可执行的电商运营优化建议。">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3 4 8v6c0 3.9 2.7 6.7 8 8 5.3-1.3 8-4.1 8-8V8l-8-5Zm0 2.2L18 9v5c0 2.8-1.9 4.8-6 5.9-4.1-1.1-6-3.1-6-5.9V9l6-3.8Zm3.6 5.2 1.4 1.4-5.7 5.7-3.3-3.3 1.4-1.4 1.9 1.9 4.3-4.3Z"></path>
+              </svg>
+              <span>运营建议</span>
+            </button>
+            <button type="button" data-question="请解释用户分群结果，说明每类用户的特征和运营重点。">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 11a4 4 0 1 1 4-4 4 4 0 0 1-4 4Zm10 0a3 3 0 1 1 3-3 3 3 0 0 1-3 3ZM7 13c3.3 0 6 1.7 6 3.8V20H1v-3.2C1 14.7 3.7 13 7 13Zm10 .5c2.8 0 5 1.4 5 3.2V20h-7v-3.2c0-1.2-.6-2.3-1.7-3.1 1-.1 2.1-.2 3.7-.2Z"></path>
+              </svg>
+              <span>分群解读</span>
+            </button>
+            <button type="button" data-question="请分析商品关联规则，找出适合捆绑销售或交叉推荐的商品组合。">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 7a4 4 0 0 1 7.5-2H17a4 4 0 0 1 0 8h-2v-2h2a2 2 0 1 0 0-4h-3.7l-.3-.6A2 2 0 0 0 9 7H7a2 2 0 1 0 0 4h2v2H7A4 4 0 0 1 7 7Zm2 4h6v2H9v-2Zm-2 9a4 4 0 0 1 0-8h2v2H7a2 2 0 1 0 0 4h3.7l.3.6A2 2 0 0 0 15 18h2a2 2 0 1 0 0-4h-2v-2h2a4 4 0 0 1 0 8h-2a4 4 0 0 1-3.5-2H7Z"></path>
+              </svg>
+              <span>关联规则</span>
+            </button>
+          </div>
+        </div>
+        <div class="model-picker" id="modelPicker">
+          <button class="model-select-button" type="button" id="modelSelectButton" aria-expanded="false">
+            <span class="model-kind-icon" id="modelKindIcon">🧠</span>
+            <strong id="currentModelName">deepseek-v4-pro</strong>
+            <span id="currentModelTag" class="visually-hidden">思考</span>
+            <span class="status-dot compact-status-dot" aria-label="连接成功"></span>
+            <svg class="select-caret" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 9.5 12 14.5 17 9.5H7Z"></path>
+            </svg>
+          </button>
+          <div class="model-menu hidden" id="modelMenu" role="menu">
+            <button type="button" data-model="deepseek-v4-pro" data-tag="思考" data-icon="🧠">
+              <span class="model-kind-icon">🧠</span>
+              <span class="model-option-main">
+                <span>deepseek-v4-pro</span>
+                <small class="model-status"><span class="status-dot"></span>连接成功</small>
+              </span>
+              <strong>思考</strong>
+            </button>
+            <button type="button" data-model="deepseek-v4-flash" data-tag="快速" data-icon="⚡">
+              <span class="model-kind-icon">⚡</span>
+              <span class="model-option-main">
+                <span>deepseek-v4-flash</span>
+                <small class="model-status"><span class="status-dot"></span>连接成功</small>
+              </span>
+              <strong>快速</strong>
+            </button>
+          </div>
+        </div>
+        <form class="input-row" id="chatForm">
+          <textarea id="questionInput" rows="1" placeholder="输入你的问题"></textarea>
+          <button type="submit">发送</button>
+        </form>
+      </footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h2 id="modalTitle">补充待分析文件</h2>
+        </div>
+        <div class="modal-header-actions">
+          <button class="icon-button" type="button" id="refreshResultsButton" aria-label="刷新文件列表" title="刷新文件列表">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.8-4.3L13 11h8V3l-3.3 3.3Z"></path>
+            </svg>
+          </button>
+          <button class="icon-button" type="button" id="closeModalButton" aria-label="关闭">×</button>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="结果类型">
+        <button class="active" type="button" data-tab="reports">
+          <span class="tab-label">
+            <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 3h9l3 3v15H6V3Zm2 2v14h8V7h-3V5H8Zm1 5h6v2H9v-2Zm0 4h6v2H9v-2Z"></path>
+            </svg>
+            <span>reports</span>
+          </span>
+          <strong>分析报告</strong>
+        </button>
+        <button type="button" data-tab="models">
+          <span class="tab-label">
+            <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 4 7v10l8 4 8-4V7l-8-4Zm0 2.2L17.5 8 12 10.8 6.5 8 12 5.2ZM6 9.7l5 2.5v6.1l-5-2.5V9.7Zm7 8.6v-6.1l5-2.5v6.1l-5 2.5Z"></path>
+            </svg>
+            <span>models</span>
+          </span>
+          <strong>模型结果(.csv)</strong>
+        </button>
+      </div>
+
+      <div class="result-list" id="modalResultList"></div>
+
+      <div class="modal-footer">
+        <span id="selectorStatus"></span>
+        <button class="primary-button" type="button" id="confirmSelectionButton">确认补充</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="clearConfirmModal" role="dialog" aria-modal="true" aria-labelledby="clearModalTitle">
+    <div class="modal confirm-modal">
+      <div class="modal-header">
+        <div>
+          <h2 id="clearModalTitle">确认清空当前对话？</h2>
+        </div>
+        <button class="icon-button" type="button" id="cancelClearButton" aria-label="关闭">×</button>
+      </div>
+      <p class="modal-desc">清空后，当前聊天记录会恢复为初始状态。</p>
+      <div class="modal-footer">
+        <button class="secondary-button" type="button" id="keepChatButton">取消</button>
+        <button class="danger-button" type="button" id="confirmClearButton">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 7h2v8h-2v-8Zm4 0h2v8h-2v-8ZM7 9h10l-.7 11H7.7L7 9Z"></path>
+          </svg>
+          <span>确认清空</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="historyModal" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
+    <div class="modal history-modal">
+      <div class="modal-header">
+        <div>
+          <h2 id="historyModalTitle">历史对话</h2>
+        </div>
+        <div class="modal-header-actions">
+          <button class="icon-button" type="button" id="refreshHistoryButton" aria-label="刷新历史记录" title="刷新历史记录">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.8-4.3L13 11h8V3l-3.3 3.3Z"></path>
+            </svg>
+          </button>
+          <button class="icon-button" type="button" id="closeHistoryButton" aria-label="关闭">×</button>
+        </div>
+      </div>
+
+      <div class="history-list" id="historyList"></div>
+
+      <div class="modal-footer">
+        <span id="historyStatus"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

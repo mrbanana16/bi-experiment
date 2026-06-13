@@ -5,3 +5,8 @@ matplotlib
 seaborn
 mlxtend
 networkx
+
+#ai-module
+openai
+flask
+httpx

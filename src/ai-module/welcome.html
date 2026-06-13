@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>电商数据智能分析助手 - 欢迎页</title>
+  <link rel="stylesheet" href="./welcome.css">
+</head>
+<body>
+  <section class="welcome-screen" id="welcomeScreen">
+    <div class="welcome-inner">
+      <div class="welcome-copy">
+        <h1>电商数据智能分析助手</h1>
+        <p>请先选择待分析的数据结果，或选择历史对话。<br>进入助手后，AI 会结合所选分析报告和模型结果，生成解释与运营建议。</p>
+      </div>
+
+      <section class="selector-card" aria-label="初次选择待分析结果">
+        <div class="selector-header">
+          <h2>选择待分析结果</h2>
+          <button class="icon-button" type="button" id="welcomeRefreshResultsButton" aria-label="刷新文件列表" title="刷新文件列表">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.8-4.3L13 11h8V3l-3.3 3.3Z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="结果类型">
+          <button class="active" type="button" data-tab="reports">
+            <span class="tab-label">
+              <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 3h9l3 3v15H6V3Zm2 2v14h8V7h-3V5H8Zm1 5h6v2H9v-2Zm0 4h6v2H9v-2Z"></path>
+              </svg>
+              <span>reports</span>
+            </span>
+            <strong>分析报告</strong>
+          </button>
+          <button type="button" data-tab="models">
+            <span class="tab-label">
+              <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3 4 7v10l8 4 8-4V7l-8-4Zm0 2.2L17.5 8 12 10.8 6.5 8 12 5.2ZM6 9.7l5 2.5v6.1l-5-2.5V9.7Zm7 8.6v-6.1l5-2.5v6.1l-5 2.5Z"></path>
+              </svg>
+              <span>models</span>
+            </span>
+            <strong>模型结果(.csv)</strong>
+          </button>
+        </div>
+
+        <div class="result-list" id="welcomeResultList"></div>
+
+        <div class="selector-footer">
+          <button class="history-button" type="button" id="openHistoryButton">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M13 3a9 9 0 1 1-8.5 6H2l3.8-4L9.6 9H6.7A7 7 0 1 0 13 5v4l3.2 2.1-1.1 1.7L11 10V3h2Z"></path>
+            </svg>
+            <span>历史对话</span>
+          </button>
+          <button class="primary-button" type="button" id="startAnalysisButton">开始智能分析</button>
+        </div>
+      </section>
+    </div>
+    <p class="welcome-backend-status" id="welcomeBackendStatus"></p>
+  </section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="modal-backdrop hidden" id="welcomeHistoryModal" role="dialog" aria-modal="true" aria-labelledby="welcomeHistoryTitle">
+    <div class="modal history-modal">
+      <div class="modal-header">
+        <div>
+          <h2 id="welcomeHistoryTitle">历史对话</h2>
+        </div>
+        <div class="modal-header-actions">
+          <button class="icon-button" type="button" id="welcomeRefreshHistoryButton" aria-label="刷新历史记录" title="刷新历史记录">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.8-4.3L13 11h8V3l-3.3 3.3Z"></path>
+            </svg>
+          </button>
+          <button class="icon-button" type="button" id="welcomeCloseHistoryButton" aria-label="关闭">×</button>
+        </div>
+      </div>
+
+      <div class="history-list" id="welcomeHistoryList"></div>
+
+      <div class="modal-footer">
+        <span id="welcomeHistoryStatus"></span>
+      </div>
+    </div>
+  </div>
+
+  <script src="./welcome.js"></script>
+</body>
+</html>
