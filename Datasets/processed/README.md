@@ -4,7 +4,8 @@
 
 1. **事件级数据集** (`preprocessed.csv`)：每一行代表用户的一次行为（浏览、加购、购买等），包含原始字段及衍生时间特征。
 2. **会话级特征数据集** (`session_based_features.csv`)：每一行代表一个用户会话（`user_session`），聚合了会话内的行为统计特征，用于用户分群、漏斗分析和推荐策略评估。
-3. **Apriori 事务表** (`transactions_for_apriori.csv`)：每一行代表一个包含 2+ 品类的用户会话，用于关联规则挖掘。
+3. **Apriori 事务表** (`transactions_for_apriori.csv`)：每一行代表一个包含 2+ 品类的购买用户（按 `user_id` 跨会话聚合），用于关联规则挖掘。
+4. **粗粒度 Apriori 事务表** (`transactions_l1_for_apriori.csv`)：结构同上，但品类粒度为一级品类。
 
 ---
 
@@ -64,19 +65,34 @@
 ## 三、Apriori 事务表 (`transactions_for_apriori.csv`)
 
 ### 文件描述
-- 每行：一个包含 2+ 商品类别的用户会话
+- 每行：一个包含 2+ 商品类别的购买用户（跨会话聚合）
 - 用途：直接用于 Apriori 算法的关联规则挖掘
 
 ### 字段说明
 
 | 字段名 | 类型 | 描述 |
 |--------|------|------|
-| `user_session` | str | 会话唯一标识 |
+| `user_id` | int | 用户唯一标识 |
 | `items` | str | 商品类别列表（Python 列表格式字符串，可用 `eval()` 转换） |
 
 ---
 
-## 四、数据质量说明
+## 四、粗粒度 Apriori 事务表 (`transactions_l1_for_apriori.csv`)
+
+### 文件描述
+- 每行：一个包含 2+ 一级品类的购买用户
+- 与 `transactions_for_apriori.csv` 结构相同，但品类粒度为一级（如 `electronics.smartphone` → `electronics`）
+
+### 字段说明
+
+| 字段名 | 类型 | 描述 |
+|--------|------|------|
+| `user_id` | int | 用户唯一标识 |
+| `items` | str | 一级品类列表（Python 列表格式字符串） |
+
+---
+
+## 五、数据质量说明
 
 - 缺失值处理：`category_code` 和 `brand` 中有缺失的行已全部删除
 - 重复值处理：已删除完全重复的事件记录
@@ -84,7 +100,7 @@
 
 ---
 
-## 五、文件版本与维护
+## 六、文件版本与维护
 
 - 创建日期：2026‑06‑12
 - 最后更新：2026‑06‑13

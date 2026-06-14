@@ -1,0 +1,318 @@
+{
+  "data_overview": {
+    "total_events": 92793,
+    "total_users": 81103,
+    "total_sessions": 88070,
+    "total_categories": 123,
+    "date_range": "2019-10-01 ~ 2019-10-31"
+  },
+  "behavior_funnel": {
+    "view_count": 88393,
+    "cart_count": 2571,
+    "purchase_count": 1829,
+    "cart_rate": 2.91,
+    "purchase_rate": 2.07,
+    "cart_to_purchase_rate": 71.14
+  },
+  "time_analysis": {
+    "peak_hour": 12,
+    "peak_hour_count": 3992,
+    "low_hour": 1,
+    "low_hour_count": 3580,
+    "most_active_day": "周四",
+    "least_active_day": "周六",
+    "weekday_pct": 74.1,
+    "weekend_pct": 25.9
+  },
+  "user_statistics": {
+    "total_users": 81103,
+    "purchasing_users": 1801,
+    "purchasing_user_rate": 2.22,
+    "avg_views_per_user": 1.09,
+    "avg_purchases_per_user": 0.02
+  },
+  "hot_categories": {
+    "top5_by_views": [
+      {
+        "category": "electronics.smartphone",
+        "count": 37102
+      },
+      {
+        "category": "electronics.clocks",
+        "count": 4095
+      },
+      {
+        "category": "computers.notebook",
+        "count": 3780
+      },
+      {
+        "category": "electronics.audio.headphone",
+        "count": 3619
+      },
+      {
+        "category": "electronics.video.tv",
+        "count": 3448
+      }
+    ],
+    "top5_by_purchases": [
+      {
+        "category": "electronics.smartphone",
+        "count": 1130
+      },
+      {
+        "category": "electronics.audio.headphone",
+        "count": 122
+      },
+      {
+        "category": "electronics.clocks",
+        "count": 61
+      },
+      {
+        "category": "electronics.video.tv",
+        "count": 57
+      },
+      {
+        "category": "appliances.environment.vacuum",
+        "count": 42
+      }
+    ],
+    "top5_by_revenue": [
+      {
+        "category": "electronics.smartphone",
+        "amount": 528089.79
+      },
+      {
+        "category": "computers.notebook",
+        "amount": 23519.92
+      },
+      {
+        "category": "electronics.video.tv",
+        "amount": 20090.76
+      },
+      {
+        "category": "electronics.clocks",
+        "amount": 15363.82
+      },
+      {
+        "category": "appliances.kitchen.refrigerators",
+        "amount": 14112.92
+      }
+    ]
+  },
+  "price_analysis": {
+    "best_range": "100-200",
+    "best_rate": 2.37,
+    "worst_range": "50-100",
+    "worst_rate": 1.3
+  },
+  "clustering": {
+    "method": "规则分层（单事件）+ K-Means（多事件）",
+    "n_clusters": 7,
+    "n_single_clusters": 3,
+    "n_multi_clusters": 4,
+    "silhouette_score": 0.9425,
+    "profiles": [
+      {
+        "cluster_id": 0,
+        "label": "仅浏览型",
+        "count": 79863,
+        "percentage": 90.7,
+        "business_features": {
+          "event_count": 1.0,
+          "unique_products": 1.0,
+          "cart_count": 0.0,
+          "purchase_count": 0.0,
+          "session_duration_min": 0.0,
+          "purchase_amount": 0.0,
+          "unique_categories": 1.0
+        },
+        "training_features": {
+          "event_count": 1.0,
+          "cart_count": 0.0,
+          "purchase_count": 0.0,
+          "log_purchase_amount": 0.0,
+          "has_purchase": 0.0,
+          "has_duration": 0.0
+        }
+      },
+      {
+        "cluster_id": 1,
+        "label": "加购未转化型",
+        "count": 2340,
+        "percentage": 2.7,
+        "business_features": {
+          "event_count": 1.0,
+          "unique_products": 1.0,
+          "cart_count": 1.0,
+          "purchase_count": 0.0,
+          "session_duration_min": 0.0,
+          "purchase_amount": 0.0,
+          "unique_categories": 1.0
+        },
+        "training_features": {
+          "event_count": 1.0,
+          "cart_count": 1.0,
+          "purchase_count": 0.0,
+          "log_purchase_amount": 0.0,
+          "has_purchase": 0.0,
+          "has_duration": 0.0
+        }
+      },
+      {
+        "cluster_id": 2,
+        "label": "直接购买型",
+        "count": 1730,
+        "percentage": 2.0,
+        "business_features": {
+          "event_count": 1.0,
+          "unique_products": 1.0,
+          "cart_count": 0.0,
+          "purchase_count": 1.0,
+          "session_duration_min": 0.0,
+          "purchase_amount": 365.59,
+          "unique_categories": 1.0
+        },
+        "training_features": {
+          "event_count": 1.0,
+          "cart_count": 0.0,
+          "purchase_count": 1.0,
+          "log_purchase_amount": 5.4292,
+          "has_purchase": 1.0,
+          "has_duration": 0.0
+        }
+      },
+      {
+        "cluster_id": 3,
+        "label": "K-Means Cluster 0",
+        "count": 3437,
+        "percentage": 3.9,
+        "business_features": {
+          "event_count": 2.0,
+          "unique_products": 1.85,
+          "cart_count": 0.0,
+          "purchase_count": 0.0,
+          "session_duration_min": 7.08,
+          "purchase_amount": 0.0,
+          "unique_categories": 1.13
+        },
+        "training_features": {
+          "event_count": 2.0,
+          "cart_count": 0.0,
+          "purchase_count": 0.0,
+          "log_purchase_amount": 0.0,
+          "has_purchase": 0.0,
+          "has_duration": 1.0
+        }
+      },
+      {
+        "cluster_id": 4,
+        "label": "K-Means Cluster 1",
+        "count": 95,
+        "percentage": 0.1,
+        "business_features": {
+          "event_count": 2.13,
+          "unique_products": 1.44,
+          "cart_count": 0.21,
+          "purchase_count": 1.04,
+          "session_duration_min": 6.27,
+          "purchase_amount": 397.93,
+          "unique_categories": 1.12
+        },
+        "training_features": {
+          "event_count": 2.1263,
+          "cart_count": 0.2105,
+          "purchase_count": 1.0421,
+          "log_purchase_amount": 5.5164,
+          "has_purchase": 1.0,
+          "has_duration": 1.0
+        }
+      },
+      {
+        "cluster_id": 5,
+        "label": "K-Means Cluster 2",
+        "count": 182,
+        "percentage": 0.2,
+        "business_features": {
+          "event_count": 2.14,
+          "unique_products": 1.46,
+          "cart_count": 1.16,
+          "purchase_count": 0.0,
+          "session_duration_min": 4.21,
+          "purchase_amount": 0.0,
+          "unique_categories": 1.08
+        },
+        "training_features": {
+          "event_count": 2.1374,
+          "cart_count": 1.1593,
+          "purchase_count": 0.0,
+          "log_purchase_amount": 0.0,
+          "has_purchase": 0.0,
+          "has_duration": 0.9945
+        }
+      },
+      {
+        "cluster_id": 6,
+        "label": "K-Means Cluster 3",
+        "count": 422,
+        "percentage": 0.5,
+        "business_features": {
+          "event_count": 3.3,
+          "unique_products": 2.97,
+          "cart_count": 0.0,
+          "purchase_count": 0.0,
+          "session_duration_min": 18.81,
+          "purchase_amount": 0.0,
+          "unique_categories": 1.22
+        },
+        "training_features": {
+          "event_count": 3.2962,
+          "cart_count": 0.0,
+          "purchase_count": 0.0,
+          "log_purchase_amount": 0.0,
+          "has_purchase": 0.0,
+          "has_duration": 1.0
+        }
+      }
+    ]
+  },
+  "association_rules": {
+    "method": "Apriori",
+    "min_support": 0.1,
+    "n_frequent_itemsets": 13,
+    "n_rules_fine": 4,
+    "n_rules_coarse": 0,
+    "coverage_fine_pct": 0.5,
+    "coverage_coarse_pct": 0.2,
+    "rules_fine": [
+      {
+        "antecedent": "appliances.kitchen.coffee_machine",
+        "consequent": "electronics.clocks",
+        "support": 0.1111,
+        "confidence": 1.0,
+        "lift": 4.5
+      },
+      {
+        "antecedent": "electronics.video.tv",
+        "consequent": "appliances.kitchen.washer",
+        "support": 0.1111,
+        "confidence": 1.0,
+        "lift": 4.5
+      },
+      {
+        "antecedent": "appliances.kitchen.oven",
+        "consequent": "electronics.smartphone",
+        "support": 0.1111,
+        "confidence": 1.0,
+        "lift": 1.5
+      },
+      {
+        "antecedent": "electronics.audio.headphone",
+        "consequent": "electronics.smartphone",
+        "support": 0.4444,
+        "confidence": 0.8,
+        "lift": 1.2
+      }
+    ],
+    "rules_coarse": []
+  }
+}
