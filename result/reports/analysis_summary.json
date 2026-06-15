@@ -3,6 +3,8 @@
     "total_events": 92793,
     "total_users": 81103,
     "total_sessions": 88070,
+    "sessions_after_outlier_filter": 88069,
+    "outlier_sessions_removed": 1,
     "total_categories": 123,
     "date_range": "2019-10-01 ~ 2019-10-31"
   },
@@ -22,14 +24,140 @@
     "most_active_day": "周四",
     "least_active_day": "周六",
     "weekday_pct": 74.1,
-    "weekend_pct": 25.9
+    "weekend_pct": 25.9,
+    "hourly_counts": {
+      "0": 3627,
+      "1": 3580,
+      "2": 3734,
+      "3": 3785,
+      "4": 3885,
+      "5": 3924,
+      "6": 3980,
+      "7": 3962,
+      "8": 3984,
+      "9": 3933,
+      "10": 3943,
+      "11": 3982,
+      "12": 3992,
+      "13": 3960,
+      "14": 3931,
+      "15": 3920,
+      "16": 3830,
+      "17": 3852,
+      "18": 3761,
+      "19": 3833,
+      "20": 3840,
+      "21": 3936,
+      "22": 3891,
+      "23": 3728
+    },
+    "weekday_counts": {
+      "周一": 11953,
+      "周二": 14666,
+      "周三": 14986,
+      "周四": 15193,
+      "周五": 11956,
+      "周六": 11938,
+      "周日": 12101
+    },
+    "hourly_by_type": {
+      "view": {
+        "0": 3517,
+        "1": 3479,
+        "2": 3587,
+        "3": 3583,
+        "4": 3656,
+        "5": 3685,
+        "6": 3734,
+        "7": 3707,
+        "8": 3740,
+        "9": 3671,
+        "10": 3677,
+        "11": 3734,
+        "12": 3766,
+        "13": 3743,
+        "14": 3757,
+        "15": 3777,
+        "16": 3713,
+        "17": 3742,
+        "18": 3632,
+        "19": 3690,
+        "20": 3708,
+        "21": 3780,
+        "22": 3737,
+        "23": 3578
+      },
+      "cart": {
+        "0": 68,
+        "1": 75,
+        "2": 96,
+        "3": 125,
+        "4": 128,
+        "5": 140,
+        "6": 137,
+        "7": 143,
+        "8": 139,
+        "9": 143,
+        "10": 150,
+        "11": 133,
+        "12": 135,
+        "13": 125,
+        "14": 113,
+        "15": 94,
+        "16": 65,
+        "17": 70,
+        "18": 79,
+        "19": 90,
+        "20": 71,
+        "21": 86,
+        "22": 94,
+        "23": 72
+      },
+      "purchase": {
+        "0": 42,
+        "1": 26,
+        "2": 51,
+        "3": 77,
+        "4": 101,
+        "5": 99,
+        "6": 109,
+        "7": 112,
+        "8": 105,
+        "9": 119,
+        "10": 116,
+        "11": 115,
+        "12": 91,
+        "13": 92,
+        "14": 61,
+        "15": 49,
+        "16": 52,
+        "17": 40,
+        "18": 50,
+        "19": 53,
+        "20": 61,
+        "21": 70,
+        "22": 60,
+        "23": 78
+      }
+    }
   },
   "user_statistics": {
     "total_users": 81103,
     "purchasing_users": 1801,
     "purchasing_user_rate": 2.22,
     "avg_views_per_user": 1.09,
-    "avg_purchases_per_user": 0.02
+    "avg_purchases_per_user": 0.02,
+    "avg_sessions_per_user": 1.09,
+    "avg_spend_per_user": 8.26,
+    "users_with_views": 77528,
+    "users_with_carts": 2515,
+    "avg_carts_per_user": 0.03,
+    "purchase_count_distribution": {
+      "0": 79302,
+      "1": 1776,
+      "2": 22,
+      "3": 3
+    }
   },
   "hot_categories": {
     "top5_by_views": [
@@ -97,13 +225,558 @@
         "category": "appliances.kitchen.refrigerators",
         "amount": 14112.92
       }
+    ],
+    "top15_by_views": [
+      {
+        "category": "electronics.smartphone",
+        "count": 37102
+      },
+      {
+        "category": "electronics.clocks",
+        "count": 4095
+      },
+      {
+        "category": "computers.notebook",
+        "count": 3780
+      },
+      {
+        "category": "electronics.audio.headphone",
+        "count": 3619
+      },
+      {
+        "category": "electronics.video.tv",
+        "count": 3448
+      },
+      {
+        "category": "appliances.kitchen.washer",
+        "count": 2789
+      },
+      {
+        "category": "appliances.environment.vacuum",
+        "count": 2453
+      },
+      {
+        "category": "appliances.kitchen.refrigerators",
+        "count": 2264
+      },
+      {
+        "category": "apparel.shoes",
+        "count": 2115
+      },
+      {
+        "category": "computers.desktop",
+        "count": 1455
+      },
+      {
+        "category": "apparel.shoes.keds",
+        "count": 1271
+      },
+      {
+        "category": "electronics.tablet",
+        "count": 1079
+      },
+      {
+        "category": "auto.accessories.player",
+        "count": 1033
+      },
+      {
+        "category": "electronics.audio.subwoofer",
+        "count": 900
+      },
+      {
+        "category": "electronics.telephone",
+        "count": 857
+      }
+    ],
+    "top15_by_purchases": [
+      {
+        "category": "electronics.smartphone",
+        "count": 1130
+      },
+      {
+        "category": "electronics.audio.headphone",
+        "count": 122
+      },
+      {
+        "category": "electronics.clocks",
+        "count": 61
+      },
+      {
+        "category": "electronics.video.tv",
+        "count": 57
+      },
+      {
+        "category": "appliances.environment.vacuum",
+        "count": 42
+      },
+      {
+        "category": "appliances.kitchen.washer",
+        "count": 41
+      },
+      {
+        "category": "computers.notebook",
+        "count": 41
+      },
+      {
+        "category": "appliances.kitchen.refrigerators",
+        "count": 38
+      },
+      {
+        "category": "electronics.tablet",
+        "count": 17
+      },
+      {
+        "category": "appliances.kitchen.microwave",
+        "count": 15
+      },
+      {
+        "category": "apparel.shoes.keds",
+        "count": 14
+      },
+      {
+        "category": "appliances.kitchen.kettle",
+        "count": 14
+      },
+      {
+        "category": "appliances.kitchen.oven",
+        "count": 12
+      },
+      {
+        "category": "computers.desktop",
+        "count": 12
+      },
+      {
+        "category": "appliances.kitchen.blender",
+        "count": 11
+      }
+    ],
+    "top15_by_revenue": [
+      {
+        "category": "electronics.smartphone",
+        "amount": 528089.79
+      },
+      {
+        "category": "computers.notebook",
+        "amount": 23519.92
+      },
+      {
+        "category": "electronics.video.tv",
+        "amount": 20090.76
+      },
+      {
+        "category": "electronics.clocks",
+        "amount": 15363.82
+      },
+      {
+        "category": "appliances.kitchen.refrigerators",
+        "amount": 14112.92
+      },
+      {
+        "category": "electronics.audio.headphone",
+        "amount": 13400.33
+      },
+      {
+        "category": "appliances.kitchen.washer",
+        "amount": 11545.47
+      },
+      {
+        "category": "appliances.environment.vacuum",
+        "amount": 6995.08
+      },
+      {
+        "category": "electronics.tablet",
+        "amount": 5298.46
+      },
+      {
+        "category": "computers.desktop",
+        "amount": 3447.67
+      },
+      {
+        "category": "appliances.kitchen.dishwasher",
+        "amount": 2183.93
+      },
+      {
+        "category": "computers.peripherals.printer",
+        "amount": 2073.1
+      },
+      {
+        "category": "furniture.living_room.cabinet",
+        "amount": 1426.29
+      },
+      {
+        "category": "auto.accessories.alarm",
+        "amount": 1375.33
+      },
+      {
+        "category": "construction.tools.saw",
+        "amount": 1341.4
+      }
+    ],
+    "category_conversion_rates": [
+      {
+        "category": "electronics.smartphone",
+        "views": 37102,
+        "purchases": 1130,
+        "conversion_rate": 3.05
+      },
+      {
+        "category": "electronics.clocks",
+        "views": 4095,
+        "purchases": 61,
+        "conversion_rate": 1.49
+      },
+      {
+        "category": "computers.notebook",
+        "views": 3780,
+        "purchases": 41,
+        "conversion_rate": 1.08
+      },
+      {
+        "category": "electronics.audio.headphone",
+        "views": 3619,
+        "purchases": 122,
+        "conversion_rate": 3.37
+      },
+      {
+        "category": "electronics.video.tv",
+        "views": 3448,
+        "purchases": 57,
+        "conversion_rate": 1.65
+      },
+      {
+        "category": "appliances.kitchen.washer",
+        "views": 2789,
+        "purchases": 41,
+        "conversion_rate": 1.47
+      },
+      {
+        "category": "appliances.environment.vacuum",
+        "views": 2453,
+        "purchases": 42,
+        "conversion_rate": 1.71
+      },
+      {
+        "category": "appliances.kitchen.refrigerators",
+        "views": 2264,
+        "purchases": 38,
+        "conversion_rate": 1.68
+      },
+      {
+        "category": "apparel.shoes",
+        "views": 2115,
+        "purchases": 9,
+        "conversion_rate": 0.43
+      },
+      {
+        "category": "computers.desktop",
+        "views": 1455,
+        "purchases": 12,
+        "conversion_rate": 0.82
+      },
+      {
+        "category": "apparel.shoes.keds",
+        "views": 1271,
+        "purchases": 14,
+        "conversion_rate": 1.1
+      },
+      {
+        "category": "electronics.tablet",
+        "views": 1079,
+        "purchases": 17,
+        "conversion_rate": 1.58
+      },
+      {
+        "category": "auto.accessories.player",
+        "views": 1033,
+        "purchases": 10,
+        "conversion_rate": 0.97
+      },
+      {
+        "category": "electronics.audio.subwoofer",
+        "views": 900,
+        "purchases": 3,
+        "conversion_rate": 0.33
+      },
+      {
+        "category": "electronics.telephone",
+        "views": 857,
+        "purchases": 9,
+        "conversion_rate": 1.05
+      }
     ]
   },
+  "hot_products_total_count": 15284,
+  "hot_products": [
+    {
+      "rank": 1,
+      "product_id": "1004856",
+      "category": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 130.76,
+      "view_count": 1437,
+      "purchase_count": 76,
+      "revenue": 9972.05,
+      "conversion_rate": 5.29
+    },
+    {
+      "rank": 2,
+      "product_id": "1004767",
+      "category": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 254.82,
+      "view_count": 1312,
+      "purchase_count": 65,
+      "revenue": 16181.63,
+      "conversion_rate": 4.95
+    },
+    {
+      "rank": 3,
+      "product_id": "1005115",
+      "category": "electronics.smartphone",
+      "brand": "apple",
+      "price": 975.57,
+      "view_count": 1213,
+      "purchase_count": 35,
+      "revenue": 34499.06,
+      "conversion_rate": 2.89
+    },
+    {
+      "rank": 4,
+      "product_id": "1004249",
+      "category": "electronics.smartphone",
+      "brand": "apple",
+      "price": 739.81,
+      "view_count": 737,
+      "purchase_count": 31,
+      "revenue": 22896.59,
+      "conversion_rate": 4.21
+    },
+    {
+      "rank": 5,
+      "product_id": "1005105",
+      "category": "electronics.smartphone",
+      "brand": "apple",
+      "price": 1415.48,
+      "view_count": 717,
+      "purchase_count": 21,
+      "revenue": 29575.15,
+      "conversion_rate": 2.93
+    },
+    {
+      "rank": 6,
+      "product_id": "1004833",
+      "category": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 174.76,
+      "view_count": 683,
+      "purchase_count": 37,
+      "revenue": 6371.56,
+      "conversion_rate": 5.42
+    },
+    {
+      "rank": 7,
+      "product_id": "1002544",
+      "category": "electronics.smartphone",
+      "brand": "apple",
+      "price": 464.13,
+      "view_count": 646,
+      "purchase_count": 35,
+      "revenue": 16128.06,
+      "conversion_rate": 5.42
+    },
+    {
+      "rank": 8,
+      "product_id": "1004870",
+      "category": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 286.86,
+      "view_count": 640,
+      "purchase_count": 43,
+      "revenue": 12249.2,
+      "conversion_rate": 6.72
+    },
+    {
+      "rank": 9,
+      "product_id": "4804056",
+      "category": "electronics.audio.headphone",
+      "brand": "apple",
+      "price": 161.98,
+      "view_count": 627,
+      "purchase_count": 46,
+      "revenue": 7394.78,
+      "conversion_rate": 7.34
+    },
+    {
+      "rank": 10,
+      "product_id": "1004741",
+      "category": "electronics.smartphone",
+      "brand": "xiaomi",
+      "price": 185.71,
+      "view_count": 522,
+      "purchase_count": 23,
+      "revenue": 4392.2,
+      "conversion_rate": 4.41
+    },
+    {
+      "rank": 11,
+      "product_id": "1004873",
+      "category": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 388.81,
+      "view_count": 482,
+      "purchase_count": 24,
+      "revenue": 8958.26,
+      "conversion_rate": 4.98
+    },
+    {
+      "rank": 12,
+      "product_id": "1004836",
+      "category": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 241.19,
+      "view_count": 468,
+      "purchase_count": 17,
+      "revenue": 3923.97,
+      "conversion_rate": 3.63
+    },
+    {
+      "rank": 13,
+      "product_id": "1004739",
+      "category": "electronics.smartphone",
+      "brand": "xiaomi",
+      "price": 197.55,
+      "view_count": 458,
+      "purchase_count": 14,
+      "revenue": 2667.57,
+      "conversion_rate": 3.06
+    },
+    {
+      "rank": 14,
+      "product_id": "1005160",
+      "category": "electronics.smartphone",
+      "brand": "xiaomi",
+      "price": 231.41,
+      "view_count": 435,
+      "purchase_count": 17,
+      "revenue": 3746.93,
+      "conversion_rate": 3.91
+    },
+    {
+      "rank": 15,
+      "product_id": "1002524",
+      "category": "electronics.smartphone",
+      "brand": "apple",
+      "price": 515.67,
+      "view_count": 409,
+      "purchase_count": 30,
+      "revenue": 15860.88,
+      "conversion_rate": 7.33
+    },
+    {
+      "rank": 16,
+      "product_id": "1002633",
+      "category": "electronics.smartphone",
+      "brand": "apple",
+      "price": 360.08,
+      "view_count": 408,
+      "purchase_count": 24,
+      "revenue": 8604.2,
+      "conversion_rate": 5.88
+    },
+    {
+      "rank": 17,
+      "product_id": "1004785",
+      "category": "electronics.smartphone",
+      "brand": "huawei",
+      "price": 278.55,
+      "view_count": 388,
+      "purchase_count": 17,
+      "revenue": 4637.92,
+      "conversion_rate": 4.38
+    },
+    {
+      "rank": 18,
+      "product_id": "1005100",
+      "category": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 154.42,
+      "view_count": 378,
+      "purchase_count": 12,
+      "revenue": 1719.04,
+      "conversion_rate": 3.17
+    },
+    {
+      "rank": 19,
+      "product_id": "4804295",
+      "category": "electronics.audio.headphone",
+      "brand": "xiaomi",
+      "price": 23.13,
+      "view_count": 375,
+      "purchase_count": 17,
+      "revenue": 385.3,
+      "conversion_rate": 4.53
+    },
+    {
+      "rank": 20,
+      "product_id": "1004565",
+      "category": "electronics.smartphone",
+      "brand": "huawei",
+      "price": 177.47,
+      "view_count": 368,
+      "purchase_count": 20,
+      "revenue": 3372.11,
+      "conversion_rate": 5.43
+    }
+  ],
   "price_analysis": {
     "best_range": "100-200",
     "best_rate": 2.37,
     "worst_range": "50-100",
-    "worst_rate": 1.3
+    "worst_rate": 1.3,
+    "ranges": [
+      {
+        "range": "0-50",
+        "event_count": 9925,
+        "view_count": 9637,
+        "purchase_count": 170,
+        "conversion_rate": 1.76
+      },
+      {
+        "range": "50-100",
+        "event_count": 11371,
+        "view_count": 11037,
+        "purchase_count": 144,
+        "conversion_rate": 1.3
+      },
+      {
+        "range": "100-200",
+        "event_count": 23062,
+        "view_count": 21668,
+        "purchase_count": 513,
+        "conversion_rate": 2.37
+      },
+      {
+        "range": "200-500",
+        "event_count": 27757,
+        "view_count": 26407,
+        "purchase_count": 568,
+        "conversion_rate": 2.15
+      },
+      {
+        "range": "500-1000",
+        "event_count": 13367,
+        "view_count": 12705,
+        "purchase_count": 285,
+        "conversion_rate": 2.24
+      },
+      {
+        "range": "1000+",
+        "event_count": 7311,
+        "view_count": 6939,
+        "purchase_count": 149,
+        "conversion_rate": 2.15
+      }
+    ]
   },
   "clustering": {
     "method": "规则分层（单事件）+ K-Means（多事件）",
@@ -117,6 +790,63 @@
         "label": "仅浏览型",
         "count": 79863,
         "percentage": 90.7,
+        "top_categories": {
+          "view": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 33985
+            },
+            {
+              "rank": 2,
+              "category": "electronics.clocks",
+              "count": 3657
+            },
+            {
+              "rank": 3,
+              "category": "electronics.audio.headphone",
+              "count": 3308
+            },
+            {
+              "rank": 4,
+              "category": "computers.notebook",
+              "count": 3280
+            },
+            {
+              "rank": 5,
+              "category": "electronics.video.tv",
+              "count": 3131
+            }
+          ],
+          "cart": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 1610
+            },
+            {
+              "rank": 2,
+              "category": "electronics.audio.headphone",
+              "count": 178
+            },
+            {
+              "rank": 3,
+              "category": "electronics.video.tv",
+              "count": 78
+            },
+            {
+              "rank": 4,
+              "category": "electronics.clocks",
+              "count": 66
+            },
+            {
+              "rank": 5,
+              "category": "appliances.kitchen.washer",
+              "count": 57
+            }
+          ],
+          "purchase": []
+        },
         "business_features": {
           "event_count": 1.0,
           "unique_products": 1.0,
@@ -139,7 +869,90 @@
         "cluster_id": 1,
         "label": "加购未转化型",
         "count": 2340,
-        "percentage": 2.7,
+        "percentage": 2.6,
+        "top_categories": {
+          "view": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 995
+            },
+            {
+              "rank": 2,
+              "category": "computers.notebook",
+              "count": 121
+            },
+            {
+              "rank": 3,
+              "category": "electronics.clocks",
+              "count": 103
+            },
+            {
+              "rank": 4,
+              "category": "electronics.video.tv",
+              "count": 92
+            },
+            {
+              "rank": 5,
+              "category": "electronics.audio.headphone",
+              "count": 82
+            }
+          ],
+          "cart": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 57
+            },
+            {
+              "rank": 2,
+              "category": "electronics.audio.headphone",
+              "count": 4
+            },
+            {
+              "rank": 3,
+              "category": "electronics.video.tv",
+              "count": 3
+            },
+            {
+              "rank": 4,
+              "category": "auto.accessories.alarm",
+              "count": 2
+            },
+            {
+              "rank": 5,
+              "category": "appliances.environment.vacuum",
+              "count": 1
+            }
+          ],
+          "purchase": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 26
+            },
+            {
+              "rank": 2,
+              "category": "appliances.environment.vacuum",
+              "count": 2
+            },
+            {
+              "rank": 3,
+              "category": "kids.toys",
+              "count": 1
+            },
+            {
+              "rank": 4,
+              "category": "electronics.video.tv",
+              "count": 1
+            },
+            {
+              "rank": 5,
+              "category": "apparel.shoes.keds",
+              "count": 1
+            }
+          ]
+        },
         "business_features": {
           "event_count": 1.0,
           "unique_products": 1.0,
@@ -163,6 +976,63 @@
         "label": "直接购买型",
         "count": 1730,
         "percentage": 2.0,
+        "top_categories": {
+          "view": [],
+          "cart": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 30
+            },
+            {
+              "rank": 2,
+              "category": "electronics.video.tv",
+              "count": 4
+            },
+            {
+              "rank": 3,
+              "category": "appliances.environment.vacuum",
+              "count": 2
+            },
+            {
+              "rank": 4,
+              "category": "electronics.telephone",
+              "count": 2
+            },
+            {
+              "rank": 5,
+              "category": "auto.accessories.alarm",
+              "count": 1
+            }
+          ],
+          "purchase": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 1067
+            },
+            {
+              "rank": 2,
+              "category": "electronics.audio.headphone",
+              "count": 111
+            },
+            {
+              "rank": 3,
+              "category": "electronics.clocks",
+              "count": 59
+            },
+            {
+              "rank": 4,
+              "category": "electronics.video.tv",
+              "count": 55
+            },
+            {
+              "rank": 5,
+              "category": "appliances.environment.vacuum",
+              "count": 40
+            }
+          ]
+        },
         "business_features": {
           "event_count": 1.0,
           "unique_products": 1.0,
@@ -183,9 +1053,66 @@
       },
       {
         "cluster_id": 3,
-        "label": "K-Means Cluster 0",
+        "label": "多次浏览型",
         "count": 3437,
         "percentage": 3.9,
+        "top_categories": {
+          "view": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 2450
+            },
+            {
+              "rank": 2,
+              "category": "computers.notebook",
+              "count": 396
+            },
+            {
+              "rank": 3,
+              "category": "electronics.clocks",
+              "count": 373
+            },
+            {
+              "rank": 4,
+              "category": "electronics.audio.headphone",
+              "count": 261
+            },
+            {
+              "rank": 5,
+              "category": "electronics.video.tv",
+              "count": 251
+            }
+          ],
+          "cart": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 65
+            },
+            {
+              "rank": 2,
+              "category": "electronics.audio.headphone",
+              "count": 6
+            },
+            {
+              "rank": 3,
+              "category": "electronics.video.tv",
+              "count": 3
+            },
+            {
+              "rank": 4,
+              "category": "electronics.clocks",
+              "count": 2
+            },
+            {
+              "rank": 5,
+              "category": "appliances.kitchen.refrigerators",
+              "count": 2
+            }
+          ],
+          "purchase": []
+        },
         "business_features": {
           "event_count": 2.0,
           "unique_products": 1.85,
@@ -206,9 +1133,77 @@
       },
       {
         "cluster_id": 4,
-        "label": "K-Means Cluster 1",
+        "label": "多事件购买型",
         "count": 95,
         "percentage": 0.1,
+        "top_categories": {
+          "view": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 50
+            },
+            {
+              "rank": 2,
+              "category": "electronics.audio.headphone",
+              "count": 8
+            },
+            {
+              "rank": 3,
+              "category": "appliances.sewing_machine",
+              "count": 3
+            },
+            {
+              "rank": 4,
+              "category": "electronics.video.tv",
+              "count": 3
+            },
+            {
+              "rank": 5,
+              "category": "computers.notebook",
+              "count": 2
+            }
+          ],
+          "cart": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 1
+            },
+            {
+              "rank": 2,
+              "category": "electronics.audio.headphone",
+              "count": 1
+            }
+          ],
+          "purchase": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 63
+            },
+            {
+              "rank": 2,
+              "category": "electronics.audio.headphone",
+              "count": 11
+            },
+            {
+              "rank": 3,
+              "category": "computers.notebook",
+              "count": 4
+            },
+            {
+              "rank": 4,
+              "category": "electronics.tablet",
+              "count": 2
+            },
+            {
+              "rank": 5,
+              "category": "electronics.clocks",
+              "count": 2
+            }
+          ]
+        },
         "business_features": {
           "event_count": 2.13,
           "unique_products": 1.44,
@@ -229,9 +1224,51 @@
       },
       {
         "cluster_id": 5,
-        "label": "K-Means Cluster 2",
+        "label": "多事件加购未转化型",
         "count": 182,
         "percentage": 0.2,
+        "top_categories": {
+          "view": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 120
+            },
+            {
+              "rank": 2,
+              "category": "electronics.video.tv",
+              "count": 11
+            },
+            {
+              "rank": 3,
+              "category": "electronics.clocks",
+              "count": 7
+            },
+            {
+              "rank": 4,
+              "category": "electronics.audio.headphone",
+              "count": 7
+            },
+            {
+              "rank": 5,
+              "category": "appliances.kitchen.blender",
+              "count": 7
+            }
+          ],
+          "cart": [
+            {
+              "rank": 1,
+              "category": "electronics.audio.headphone",
+              "count": 2
+            },
+            {
+              "rank": 2,
+              "category": "electronics.smartphone",
+              "count": 1
+            }
+          ],
+          "purchase": []
+        },
         "business_features": {
           "event_count": 2.14,
           "unique_products": 1.46,
@@ -252,9 +1289,66 @@
       },
       {
         "cluster_id": 6,
-        "label": "K-Means Cluster 3",
+        "label": "深度浏览型",
         "count": 422,
         "percentage": 0.5,
+        "top_categories": {
+          "view": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 496
+            },
+            {
+              "rank": 2,
+              "category": "computers.notebook",
+              "count": 96
+            },
+            {
+              "rank": 3,
+              "category": "electronics.clocks",
+              "count": 56
+            },
+            {
+              "rank": 4,
+              "category": "appliances.kitchen.washer",
+              "count": 53
+            },
+            {
+              "rank": 5,
+              "category": "electronics.video.tv",
+              "count": 52
+            }
+          ],
+          "cart": [
+            {
+              "rank": 1,
+              "category": "electronics.smartphone",
+              "count": 11
+            },
+            {
+              "rank": 2,
+              "category": "electronics.audio.headphone",
+              "count": 2
+            },
+            {
+              "rank": 3,
+              "category": "electronics.video.tv",
+              "count": 1
+            },
+            {
+              "rank": 4,
+              "category": "computers.notebook",
+              "count": 1
+            },
+            {
+              "rank": 5,
+              "category": "appliances.environment.vacuum",
+              "count": 1
+            }
+          ],
+          "purchase": []
+        },
         "business_features": {
           "event_count": 3.3,
           "unique_products": 2.97,
@@ -273,12 +1367,101 @@
           "has_duration": 1.0
         }
       }
-    ]
+    ],
+    "elbow_silhouette": {
+      "k_range": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "inertias": [
+        12675.2,
+        8525.86,
+        5089.29,
+        2146.5
+      ],
+      "silhouette_scores": [
+        0.9188,
+        0.9201,
+        0.8774,
+        0.9461
+      ]
+    }
   },
   "association_rules": {
     "method": "Apriori",
     "min_support": 0.1,
     "n_frequent_itemsets": 13,
+    "frequent_itemsets": [
+      {
+        "itemsets": "electronics.smartphone",
+        "support": 0.6667
+      },
+      {
+        "itemsets": "electronics.audio.headphone",
+        "support": 0.5556
+      },
+      {
+        "itemsets": "electronics.audio.headphone, electronics.smartphone",
+        "support": 0.4444
+      },
+      {
+        "itemsets": "electronics.clocks",
+        "support": 0.2222
+      },
+      {
+        "itemsets": "appliances.kitchen.washer",
+        "support": 0.2222
+      },
+      {
+        "itemsets": "appliances.kitchen.oven",
+        "support": 0.1111
+      },
+      {
+        "itemsets": "appliances.kitchen.coffee_machine",
+        "support": 0.1111
+      },
+      {
+        "itemsets": "appliances.kitchen.coffee_machine, electronics.clocks",
+        "support": 0.1111
+      },
+      {
+        "itemsets": "electronics.video.tv",
+        "support": 0.1111
+      },
+      {
+        "itemsets": "appliances.kitchen.oven, electronics.smartphone",
+        "support": 0.1111
+      },
+      {
+        "itemsets": "appliances.kitchen.washer, electronics.smartphone",
+        "support": 0.1111
+      },
+      {
+        "itemsets": "appliances.kitchen.washer, electronics.video.tv",
+        "support": 0.1111
+      },
+      {
+        "itemsets": "electronics.audio.headphone, electronics.clocks",
+        "support": 0.1111
+      }
+    ],
+    "n_frequent_itemsets_l1": 3,
+    "frequent_itemsets_l1": [
+      {
+        "itemsets": "appliances",
+        "support": 1.0
+      },
+      {
+        "itemsets": "electronics",
+        "support": 1.0
+      },
+      {
+        "itemsets": "appliances, electronics",
+        "support": 1.0
+      }
+    ],
     "n_rules_fine": 4,
     "n_rules_coarse": 0,
     "coverage_fine_pct": 0.5,
@@ -287,32 +1470,101 @@
       {
         "antecedent": "appliances.kitchen.coffee_machine",
         "consequent": "electronics.clocks",
+        "antecedent_support": 0.1111,
+        "consequent_support": 0.2222,
         "support": 0.1111,
         "confidence": 1.0,
-        "lift": 4.5
+        "lift": 4.5,
+        "representativity": 1.0,
+        "leverage": 0.0864,
+        "conviction": null,
+        "zhangs_metric": 0.875,
+        "jaccard": 0.5,
+        "certainty": 1.0,
+        "kulczynski": 0.75
       },
       {
         "antecedent": "electronics.video.tv",
         "consequent": "appliances.kitchen.washer",
+        "antecedent_support": 0.1111,
+        "consequent_support": 0.2222,
         "support": 0.1111,
         "confidence": 1.0,
-        "lift": 4.5
+        "lift": 4.5,
+        "representativity": 1.0,
+        "leverage": 0.0864,
+        "conviction": null,
+        "zhangs_metric": 0.875,
+        "jaccard": 0.5,
+        "certainty": 1.0,
+        "kulczynski": 0.75
       },
       {
         "antecedent": "appliances.kitchen.oven",
         "consequent": "electronics.smartphone",
+        "antecedent_support": 0.1111,
+        "consequent_support": 0.6667,
         "support": 0.1111,
         "confidence": 1.0,
-        "lift": 1.5
+        "lift": 1.5,
+        "representativity": 1.0,
+        "leverage": 0.037,
+        "conviction": null,
+        "zhangs_metric": 0.375,
+        "jaccard": 0.1667,
+        "certainty": 1.0,
+        "kulczynski": 0.5833
       },
       {
         "antecedent": "electronics.audio.headphone",
         "consequent": "electronics.smartphone",
+        "antecedent_support": 0.5556,
+        "consequent_support": 0.6667,
         "support": 0.4444,
         "confidence": 0.8,
-        "lift": 1.2
+        "lift": 1.2,
+        "representativity": 1.0,
+        "leverage": 0.0741,
+        "conviction": 1.6667,
+        "zhangs_metric": 0.375,
+        "jaccard": 0.5714,
+        "certainty": 0.4,
+        "kulczynski": 0.7333
       }
     ],
-    "rules_coarse": []
+    "rules_coarse": [],
+    "network": {
+      "nodes": [
+        "appliances.kitchen.coffee_machine",
+        "appliances.kitchen.washer",
+        "appliances.kitchen.oven",
+        "electronics.audio.headphone",
+        "electronics.clocks",
+        "electronics.smartphone",
+        "electronics.video.tv"
+      ],
+      "edges": [
+        {
+          "source": "appliances.kitchen.coffee_machine",
+          "target": "electronics.clocks",
+          "lift": 4.5
+        },
+        {
+          "source": "electronics.video.tv",
+          "target": "appliances.kitchen.washer",
+          "lift": 4.5
+        },
+        {
+          "source": "appliances.kitchen.oven",
+          "target": "electronics.smartphone",
+          "lift": 1.5
+        },
+        {
+          "source": "electronics.audio.headphone",
+          "target": "electronics.smartphone",
+          "lift": 1.2
+        }
+      ]
+    }
   }
 }

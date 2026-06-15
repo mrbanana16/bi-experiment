@@ -23,7 +23,7 @@
 - 用户数：81,103 个
 - 会话数：88,070 个
 - 商品类别数：123 个
-- 数据时间范围：2019-10-01 ~ 2019-10-31（仅 1 个月）
+- 数据时间范围：2019-10-01 ~ 2019-10-31
 
 > **注意**：时间维度分析（高峰时段、最活跃星期等）仅反映 2019 年 10 月的特征，不一定适用于其他时间段。
 
@@ -50,9 +50,34 @@
 - 高峰时段：12时（3,992次）
 - 低谷时段：1时（3,580次）
 
+| 时段 | 事件数 | 时段 | 事件数 |
+|------|--------|------|--------|
+| 0:00 | 3,627 | 12:00 | 3,992 |
+| 1:00 | 3,580 | 13:00 | 3,960 |
+| 2:00 | 3,734 | 14:00 | 3,931 |
+| 3:00 | 3,785 | 15:00 | 3,920 |
+| 4:00 | 3,885 | 16:00 | 3,830 |
+| 5:00 | 3,924 | 17:00 | 3,852 |
+| 6:00 | 3,980 | 18:00 | 3,761 |
+| 7:00 | 3,962 | 19:00 | 3,833 |
+| 8:00 | 3,984 | 20:00 | 3,840 |
+| 9:00 | 3,933 | 21:00 | 3,936 |
+| 10:00 | 3,943 | 22:00 | 3,891 |
+| 11:00 | 3,982 | 23:00 | 3,728 |
+
 **按星期分布**：
 - 最活跃：周四（15,193次）
 - 最不活跃：周六（11,938次）
+
+| 星期 | 事件数 |
+|------|--------|
+| 周一 | 11,953 |
+| 周二 | 14,666 |
+| 周三 | 14,986 |
+| 周四 | 15,193 |
+| 周五 | 11,956 |
+| 周六 | 11,938 |
+| 周日 | 12,101 |
 
 **工作日vs周末**：
 - 工作日：68,754次（74.1%）
@@ -81,6 +106,26 @@
 4. electronics.clocks（15,363.82）
 5. appliances.kitchen.refrigerators（14,112.92）
 
+**品类转化率排行（Top15 by 浏览量）**：
+
+| 品类 | 浏览量 | 购买量 | 转化率 |
+|------|--------|--------|--------|
+| electronics.smartphone | 37,102 | 1,130 | 3.05% |
+| electronics.clocks | 4,095 | 61 | 1.49% |
+| computers.notebook | 3,780 | 41 | 1.08% |
+| electronics.audio.headphone | 3,619 | 122 | 3.37% |
+| electronics.video.tv | 3,448 | 57 | 1.65% |
+| appliances.kitchen.washer | 2,789 | 41 | 1.47% |
+| appliances.environment.vacuum | 2,453 | 42 | 1.71% |
+| appliances.kitchen.refrigerators | 2,264 | 38 | 1.68% |
+| apparel.shoes | 2,115 | 9 | 0.43% |
+| computers.desktop | 1,455 | 12 | 0.82% |
+| apparel.shoes.keds | 1,271 | 14 | 1.1% |
+| electronics.tablet | 1,079 | 17 | 1.58% |
+| auto.accessories.player | 1,033 | 10 | 0.97% |
+| electronics.audio.subwoofer | 900 | 3 | 0.33% |
+| electronics.telephone | 857 | 9 | 1.05% |
+
 ### 3.4 价格区间分析
 
 | 价格区间 | 浏览量 | 购买量 | 转化率 |
@@ -102,9 +147,49 @@
 | 指标 | 数值 |
 |------|------|
 | 总用户数 | 81,103 |
+| 有浏览行为用户 | 77,528 |
+| 有加购行为用户 | 2,515 |
 | 有购买行为用户 | 1,801（2.22%） |
 | 人均浏览次数 | 1.09 |
+| 人均加购次数 | 0.03 |
 | 人均购买次数 | 0.02 |
+| 人均会话数 | 1.09 |
+| 人均消费金额 | 8.26 |
+
+**用户购买次数分布**：
+
+| 购买次数 | 用户数 |
+|---------|--------|
+| 0 次 | 79,302 |
+| 1 次 | 1,776 |
+| 2 次 | 22 |
+| 3 次 | 3 |
+
+
+### 3.6 热门商品 Top20
+
+| 排名 | 商品ID | 品类 | 品牌 | 价格 | 浏览量 | 购买量 | 金额 | 转化率 |
+|------|--------|------|------|------|--------|--------|------|--------|
+| 1 | 1004856 | electronics.smartphone | samsung | 130.76 | 1,437 | 76 | 9,972.05 | 5.29% |
+| 2 | 1004767 | electronics.smartphone | samsung | 254.82 | 1,312 | 65 | 16,181.63 | 4.95% |
+| 3 | 1005115 | electronics.smartphone | apple | 975.57 | 1,213 | 35 | 34,499.06 | 2.89% |
+| 4 | 1004249 | electronics.smartphone | apple | 739.81 | 737 | 31 | 22,896.59 | 4.21% |
+| 5 | 1005105 | electronics.smartphone | apple | 1415.48 | 717 | 21 | 29,575.15 | 2.93% |
+| 6 | 1004833 | electronics.smartphone | samsung | 174.76 | 683 | 37 | 6,371.56 | 5.42% |
+| 7 | 1002544 | electronics.smartphone | apple | 464.13 | 646 | 35 | 16,128.06 | 5.42% |
+| 8 | 1004870 | electronics.smartphone | samsung | 286.86 | 640 | 43 | 12,249.20 | 6.72% |
+| 9 | 4804056 | electronics.audio.headphone | apple | 161.98 | 627 | 46 | 7,394.78 | 7.34% |
+| 10 | 1004741 | electronics.smartphone | xiaomi | 185.71 | 522 | 23 | 4,392.20 | 4.41% |
+| 11 | 1004873 | electronics.smartphone | samsung | 388.81 | 482 | 24 | 8,958.26 | 4.98% |
+| 12 | 1004836 | electronics.smartphone | samsung | 241.19 | 468 | 17 | 3,923.97 | 3.63% |
+| 13 | 1004739 | electronics.smartphone | xiaomi | 197.55 | 458 | 14 | 2,667.57 | 3.06% |
+| 14 | 1005160 | electronics.smartphone | xiaomi | 231.41 | 435 | 17 | 3,746.93 | 3.91% |
+| 15 | 1002524 | electronics.smartphone | apple | 515.67 | 409 | 30 | 15,860.88 | 7.33% |
+| 16 | 1002633 | electronics.smartphone | apple | 360.08 | 408 | 24 | 8,604.20 | 5.88% |
+| 17 | 1004785 | electronics.smartphone | huawei | 278.55 | 388 | 17 | 4,637.92 | 4.38% |
+| 18 | 1005100 | electronics.smartphone | samsung | 154.42 | 378 | 12 | 1,719.04 | 3.17% |
+| 19 | 4804295 | electronics.audio.headphone | xiaomi | 23.13 | 375 | 17 | 385.30 | 4.53% |
+| 20 | 1004565 | electronics.smartphone | huawei | 177.47 | 368 | 20 | 3,372.11 | 5.43% |
 
 
 ---
@@ -115,6 +200,16 @@
 - 算法：规则分层（单事件会话）+ K-Means（多事件会话）
 - 训练特征：event_count, cart_count, purchase_count, log_purchase_amount, has_purchase, has_duration
 - 标准化：StandardScaler
+- 最优K值选择（多事件会话，肘部法则 + 轮廓系数）：
+
+| K | Inertia | 轮廓系数 |
+|---|---------|---------|
+| 2 | 12,675.20 | 0.9188 |
+| 3 | 8,525.86 | 0.9201 |
+| 4 | 5,089.29 | 0.8774 |
+| 5 | 2,146.50 | 0.9461 |
+
+> 选择 K=5，轮廓系数最高（0.9461）。
 - 数据预处理：
   - 移除 session_duration_min > 1440 分钟的异常会话
   - 单事件会话（event_count=1）用规则分为浏览/加购/购买三类
@@ -142,7 +237,7 @@
 - event_count: 1.00, cart_count: 0.00, purchase_count: 0.00
 - log_purchase_amount: 0.0000, has_purchase: 0.00, has_duration: 0.00
 
-#### Cluster 1（加购未转化型，2,340 个会话，占 2.7%）
+#### Cluster 1（加购未转化型，2,340 个会话，占 2.6%）
 
 **业务特征**：
 - 平均事件数：1.00
@@ -172,7 +267,7 @@
 - event_count: 1.00, cart_count: 0.00, purchase_count: 1.00
 - log_purchase_amount: 5.4292, has_purchase: 1.00, has_duration: 0.00
 
-#### Cluster 3（K-Means Cluster 0，3,437 个会话，占 3.9%）
+#### Cluster 3（多次浏览型，3,437 个会话，占 3.9%）
 
 **业务特征**：
 - 平均事件数：2.00
@@ -187,7 +282,7 @@
 - event_count: 2.00, cart_count: 0.00, purchase_count: 0.00
 - log_purchase_amount: 0.0000, has_purchase: 0.00, has_duration: 1.00
 
-#### Cluster 4（K-Means Cluster 1，95 个会话，占 0.1%）
+#### Cluster 4（多事件购买型，95 个会话，占 0.1%）
 
 **业务特征**：
 - 平均事件数：2.13
@@ -202,7 +297,7 @@
 - event_count: 2.13, cart_count: 0.21, purchase_count: 1.04
 - log_purchase_amount: 5.5164, has_purchase: 1.00, has_duration: 1.00
 
-#### Cluster 5（K-Means Cluster 2，182 个会话，占 0.2%）
+#### Cluster 5（多事件加购未转化型，182 个会话，占 0.2%）
 
 **业务特征**：
 - 平均事件数：2.14
@@ -217,7 +312,7 @@
 - event_count: 2.14, cart_count: 1.16, purchase_count: 0.00
 - log_purchase_amount: 0.0000, has_purchase: 0.00, has_duration: 0.99
 
-#### Cluster 6（K-Means Cluster 3，422 个会话，占 0.5%）
+#### Cluster 6（深度浏览型，422 个会话，占 0.5%）
 
 **业务特征**：
 - 平均事件数：3.30
@@ -231,6 +326,155 @@
 **训练特征**（聚类决策依据）：
 - event_count: 3.30, cart_count: 0.00, purchase_count: 0.00
 - log_purchase_amount: 0.0000, has_purchase: 0.00, has_duration: 1.00
+
+
+### 4.2a 各聚类品类偏好
+
+各聚类的浏览和购买 Top5 品类分布如下：
+
+
+**Cluster 0（仅浏览型）**：
+
+| 浏览排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 33,985 |
+| 2 | electronics.clocks | 3,657 |
+| 3 | electronics.audio.headphone | 3,308 |
+| 4 | computers.notebook | 3,280 |
+| 5 | electronics.video.tv | 3,131 |
+
+| 加购排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 1,610 |
+| 2 | electronics.audio.headphone | 178 |
+| 3 | electronics.video.tv | 78 |
+| 4 | electronics.clocks | 66 |
+| 5 | appliances.kitchen.washer | 57 |
+
+
+**Cluster 1（加购未转化型）**：
+
+| 浏览排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 995 |
+| 2 | computers.notebook | 121 |
+| 3 | electronics.clocks | 103 |
+| 4 | electronics.video.tv | 92 |
+| 5 | electronics.audio.headphone | 82 |
+
+| 加购排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 57 |
+| 2 | electronics.audio.headphone | 4 |
+| 3 | electronics.video.tv | 3 |
+| 4 | auto.accessories.alarm | 2 |
+| 5 | appliances.environment.vacuum | 1 |
+
+| 购买排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 26 |
+| 2 | appliances.environment.vacuum | 2 |
+| 3 | kids.toys | 1 |
+| 4 | electronics.video.tv | 1 |
+| 5 | apparel.shoes.keds | 1 |
+
+
+**Cluster 2（直接购买型）**：
+
+| 加购排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 30 |
+| 2 | electronics.video.tv | 4 |
+| 3 | appliances.environment.vacuum | 2 |
+| 4 | electronics.telephone | 2 |
+| 5 | auto.accessories.alarm | 1 |
+
+| 购买排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 1,067 |
+| 2 | electronics.audio.headphone | 111 |
+| 3 | electronics.clocks | 59 |
+| 4 | electronics.video.tv | 55 |
+| 5 | appliances.environment.vacuum | 40 |
+
+
+**Cluster 3（多次浏览型）**：
+
+| 浏览排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 2,450 |
+| 2 | computers.notebook | 396 |
+| 3 | electronics.clocks | 373 |
+| 4 | electronics.audio.headphone | 261 |
+| 5 | electronics.video.tv | 251 |
+
+| 加购排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 65 |
+| 2 | electronics.audio.headphone | 6 |
+| 3 | electronics.video.tv | 3 |
+| 4 | electronics.clocks | 2 |
+| 5 | appliances.kitchen.refrigerators | 2 |
+
+
+**Cluster 4（多事件购买型）**：
+
+| 浏览排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 50 |
+| 2 | electronics.audio.headphone | 8 |
+| 3 | appliances.sewing_machine | 3 |
+| 4 | electronics.video.tv | 3 |
+| 5 | computers.notebook | 2 |
+
+| 加购排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 1 |
+| 2 | electronics.audio.headphone | 1 |
+
+| 购买排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 63 |
+| 2 | electronics.audio.headphone | 11 |
+| 3 | computers.notebook | 4 |
+| 4 | electronics.tablet | 2 |
+| 5 | electronics.clocks | 2 |
+
+
+**Cluster 5（多事件加购未转化型）**：
+
+| 浏览排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 120 |
+| 2 | electronics.video.tv | 11 |
+| 3 | electronics.clocks | 7 |
+| 4 | electronics.audio.headphone | 7 |
+| 5 | appliances.kitchen.blender | 7 |
+
+| 加购排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.audio.headphone | 2 |
+| 2 | electronics.smartphone | 1 |
+
+
+**Cluster 6（深度浏览型）**：
+
+| 浏览排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 496 |
+| 2 | computers.notebook | 96 |
+| 3 | electronics.clocks | 56 |
+| 4 | appliances.kitchen.washer | 53 |
+| 5 | electronics.video.tv | 52 |
+
+| 加购排名 | 品类 | 数量 |
+|--------|------|------|
+| 1 | electronics.smartphone | 11 |
+| 2 | electronics.audio.headphone | 2 |
+| 3 | electronics.video.tv | 1 |
+| 4 | computers.notebook | 1 |
+| 5 | appliances.environment.vacuum | 1 |
+
 
 
 ### 4.3 聚类解释
@@ -280,7 +524,7 @@ K-Means 聚类中的购买用户分布在多个聚类中，合计覆盖全部购
 - 算法：Apriori
 - 事务表：以用户为单位，聚合购买记录（仅 purchase 事件），过滤单品类用户后构建共购事务表
 - 最小支持度：0.1
-- 最小提升度：1.0
+- 最小提升度：>1.0（排除独立规则）
 
 ### 5.2 挖掘结果
 
@@ -307,6 +551,15 @@ K-Means 聚类中的购买用户分布在多个聚类中，合计覆盖全部购
 - 提升度：4.5000（是随机购买的4.5倍）
 
 
+**关联网络**：
+
+关联规则形成了包含 7 个品类节点、4 条有向边的关联网络。主要关联路径：
+
+- **appliances.kitchen.coffee_machine** → **electronics.clocks**（提升度 4.5）
+- **electronics.video.tv** → **appliances.kitchen.washer**（提升度 4.5）
+- **appliances.kitchen.oven** → **electronics.smartphone**（提升度 1.5）
+- **electronics.audio.headphone** → **electronics.smartphone**（提升度 1.2）
+
 **业务建议**：
 1. 可以将关联性强的商品进行捆绑销售
 2. 在商品详情页推荐关联商品
@@ -320,6 +573,22 @@ K-Means 聚类中的购买用户分布在多个聚类中，合计覆盖全部购
 >
 > **建议**：扩大时间窗口（如 3-6 个月）以获取更多跨品类共购样本，提升规则的可信度和覆盖率。
 
+
+### 5.5 粗粒度关联规则（一级品类）
+
+将品类聚合到一级（如 `electronics.smartphone` → `electronics`），粗粒度覆盖率为 0.2%（细粒度为 0.5%）。
+
+**粗粒度频繁项集**：
+
+| 项集 | 支持度 |
+|------|--------|
+| appliances | 1.0000 |
+| electronics | 1.0000 |
+| appliances, electronics | 1.0000 |
+
+**粗粒度关联规则：0 条**
+
+所有跨品类购买用户均在同一一级品类（`electronics` 和 `appliances`）下购买，无法生成跨一级品类的关联规则。
 
 
 ---
@@ -427,5 +696,5 @@ print(profiles)
 
 ---
 
-*报告生成时间：2026-06-14*
+*报告生成时间：2026-06-15*
 *分析脚本：src/step2_1_behavior_analysis.py, src/step2_2_clustering.py, src/step2_3_association_rules.py, src/step2_4_report.py*

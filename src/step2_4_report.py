@@ -16,6 +16,21 @@ warnings.filterwarnings('ignore')
 os.makedirs('result/reports', exist_ok=True)
 
 
+def round_pct_sum_100(counts, total):
+    """Round percentages to 1 decimal so they sum to exactly 100.0 (largest-remainder method)."""
+    import math
+    raw = [c / total * 100 for c in counts]
+    floored = [math.floor(r * 10) / 10 for r in raw]
+    remainder = round(100.0 - sum(floored), 1)
+    n_to_bump = int(round(remainder * 10))
+    remainders = [(raw[i] - floored[i], i) for i in range(len(raw))]
+    remainders.sort(key=lambda x: x[0], reverse=True)
+    result = list(floored)
+    for j in range(n_to_bump):
+        result[remainders[j][1]] = round(result[remainders[j][1]] + 0.1, 1)
+    return result
+
+
 def convert_numpy_types(obj):
     """递归将 numpy 类型转换为 Python 原生类型（供 JSON 序列化）"""
     if isinstance(obj, (np.integer,)):
@@ -41,6 +56,10 @@ print("=" * 50)
 df = pd.read_csv('Datasets/processed/preprocessed.csv')
 print(f"预处理数据形状: {df.shape}")
 
+date_min = str(pd.to_datetime(df['event_time']).min().date())
+date_max = str(pd.to_datetime(df['event_time']).max().date())
+date_range_str = f"{date_min} ~ {date_max}"
+
 cluster_profiles = pd.read_csv('result/models/cluster_profiles.csv', index_col=0)
 print(f"聚类画像（训练特征）形状: {cluster_profiles.shape}")
 print(f"聚类画像列名: {cluster_profiles.columns.tolist()}")
@@ -53,6 +72,12 @@ print(f"细粒度关联规则数量: {len(association_rules)}")
 
 frequent_itemsets = pd.read_csv('result/models/frequent_itemsets.csv')
 print(f"频繁项集数量: {len(frequent_itemsets)}")
+
+hot_products = pd.read_csv('result/models/hot_products.csv')
+print(f"热门商品数量: {len(hot_products)}")
+
+cluster_category_prefs = pd.read_csv('result/models/cluster_category_preferences.csv')
+print(f"聚类品类偏好条目数: {len(cluster_category_prefs)}")
 
 has_l1_rules = os.path.exists('result/models/association_rules_l1.csv')
 if has_l1_rules:
@@ -118,6 +143,9 @@ purchasing_user_rate = round(purchasing_users / total_users * 100, 2)
 user_event_counts = df.groupby('user_id')['event_type'].value_counts().unstack(fill_value=0)
 avg_views_per_user = round(user_event_counts.get('view', pd.Series(dtype=float)).mean(), 2) if len(user_event_counts) > 0 else 0
 avg_purchases_per_user = round(user_event_counts.get('purchase', pd.Series(dtype=float)).mean(), 2) if len(user_event_counts) > 0 else 0
+avg_sessions_per_user = round(df.groupby('user_id')['user_session'].nunique().mean(), 2)
+purchase_amount_by_user = df[df['event_type'] == 'purchase'].groupby('user_id')['price'].sum()
+avg_spend_per_user = round(purchase_amount_by_user.sum() / total_users, 2)
 
 total_events_raw = len(df)
 total_sessions = df['user_session'].nunique()
@@ -151,15 +179,24 @@ cluster_merge_map = _model_data['metadata'].get('cluster_merge_map', {})
 min_cluster_size = _model_data['metadata'].get('min_cluster_size', 10)
 single_cluster_labels = _model_data['metadata'].get('single_cluster_labels', {0: '仅浏览型', 1: '加购未转化型', 2: '直接购买型'})
 n_single_clusters = _model_data['metadata'].get('n_single_clusters', 3)
+inertias = _model_data['metadata'].get('inertias', [])
+sil_scores = _model_data['metadata'].get('sil_scores', [])
 _labels = _model_data['final_labels']
 
 cluster_sizes = pd.Series(_labels).value_counts().sort_index()
 n_clusters = len(cluster_sizes)
+single_event_pct = round(cluster_sizes.iloc[:n_single_clusters].sum() / len(_labels) * 100, 1)
 
 # 生成品类Top5字符串
 view_top5 = "\n".join([f"{i+1}. {cat}（{count:,}次）" for i, (cat, count) in enumerate(view_by_cat.items())])
 purchase_top5 = "\n".join([f"{i+1}. {cat}（{count:,}次）" for i, (cat, count) in enumerate(purchase_by_cat.items())])
 revenue_top5 = "\n".join([f"{i+1}. {cat}（{amount:,.2f}）" for i, (cat, amount) in enumerate(revenue_by_cat.items())])
+
+# 品类转化率（Top15 by views，供报告使用）
+cat_funnel = df_with_category[df_with_category['event_type'].isin(['view', 'cart', 'purchase'])].groupby('category_code')['event_type'].value_counts().unstack(fill_value=0)
+if 'view' in cat_funnel.columns and 'purchase' in cat_funnel.columns:
+    cat_funnel['conversion_rate'] = (cat_funnel['purchase'] / cat_funnel['view'].replace(0, np.nan) * 100).round(2)
+top15_cats = cat_funnel.nlargest(15, 'view')
 
 # 价格区间表格
 price_table = ""
@@ -184,16 +221,31 @@ print("2. 生成报告")
 print("=" * 50)
 
 # 构建聚类画像字符串（全量用户）
+cluster_pcts = round_pct_sum_100([int(cluster_sizes.get(i, 0)) for i in range(n_clusters)], len(_labels))
+
+
+def get_cluster_label(cid, biz):
+    """根据聚类业务特征推断标签"""
+    if cid < n_single_clusters:
+        return single_cluster_labels.get(cid, f"单事件分群{cid}")
+    # K-Means 聚类：根据业务特征推断
+    if biz['purchase_count'] > 0.5:
+        return "多事件购买型"
+    elif biz['cart_count'] > 0.5 and biz['purchase_count'] < 0.1:
+        return "多事件加购未转化型"
+    elif biz['event_count'] >= 3:
+        return "深度浏览型"
+    else:
+        return "多次浏览型"
+
+
 cluster_profiles_section = ""
 for i in range(n_clusters):
     biz = cluster_profiles_business.iloc[i]
     train = cluster_profiles.iloc[i]
     count = cluster_sizes.get(i, 0)
-    pct = round(count / len(_labels) * 100, 1)
-    if i < n_single_clusters:
-        seg_label = single_cluster_labels.get(i, f"单事件分群{i}")
-    else:
-        seg_label = f"K-Means Cluster {i - n_single_clusters}"
+    pct = cluster_pcts[i]
+    seg_label = get_cluster_label(i, biz)
     cluster_profiles_section += f"""
 #### Cluster {i}（{seg_label}，{count:,} 个会话，占 {pct}%）
 
@@ -295,18 +347,72 @@ if has_l1_rules and len(association_rules_l1) > 0:
 |------|-----------------|-----------------|--------|--------|--------|
 {l1_rules_table}
 """
+else:
+    # 有粗粒度频繁项集但无规则
+    l1_fi_path = 'result/models/frequent_itemsets_l1.csv'
+    if os.path.exists(l1_fi_path):
+        l1_fi = pd.read_csv(l1_fi_path)
+        l1_fi_table = ""
+        for _, row in l1_fi.iterrows():
+            l1_fi_table += f"| {row['itemsets']} | {row['support']:.4f} |\n"
+        l1_rules_section = f"""
+### 5.5 粗粒度关联规则（一级品类）
+
+将品类聚合到一级（如 `electronics.smartphone` → `electronics`），粗粒度覆盖率为 {l1_rule_cross_pct}%（细粒度为 {rule_cross_pct}%）。
+
+**粗粒度频繁项集**：
+
+| 项集 | 支持度 |
+|------|--------|
+{l1_fi_table}
+**粗粒度关联规则：0 条**
+
+所有跨品类购买用户均在同一一级品类（`electronics` 和 `appliances`）下购买，无法生成跨一级品类的关联规则。
+"""
 
 # 用户级统计字符串
+user_purchase_dist = user_event_counts.get('purchase', pd.Series(dtype=float)).value_counts().sort_index().head(10)
+purchase_dist_rows = "\n".join([f"| {int(k)} 次 | {int(v):,} |" for k, v in user_purchase_dist.items()])
 user_stats_section = f"""
 ### 3.5 用户级统计
 
 | 指标 | 数值 |
 |------|------|
 | 总用户数 | {total_users:,} |
+| 有浏览行为用户 | {int((user_event_counts.get('view', pd.Series(dtype=float)) > 0).sum()):,} |
+| 有加购行为用户 | {int((user_event_counts.get('cart', pd.Series(dtype=float)) > 0).sum()):,} |
 | 有购买行为用户 | {purchasing_users:,}（{purchasing_user_rate}%） |
 | 人均浏览次数 | {avg_views_per_user} |
+| 人均加购次数 | {round(user_event_counts.get('cart', pd.Series(dtype=float)).mean(), 2)} |
 | 人均购买次数 | {avg_purchases_per_user} |
+| 人均会话数 | {avg_sessions_per_user} |
+| 人均消费金额 | {avg_spend_per_user} |
+
+**用户购买次数分布**：
+
+| 购买次数 | 用户数 |
+|---------|--------|
+{purchase_dist_rows}
 """
+
+# 热门商品 Top20 表格
+hot_products_table = ""
+for rank, (_, row) in enumerate(hot_products.head(20).iterrows(), 1):
+    hot_products_table += f"| {rank} | {row['product_id']} | {row['category_code']} | {row['brand']} | {row['price']:.2f} | {int(row['view_count']):,} | {int(row['purchase_count']):,} | {row['revenue']:,.2f} | {row['conversion_rate']:.2f}% |\n"
+
+# 各聚类品类偏好
+cluster_category_section = ""
+for cid in range(n_clusters):
+    biz = cluster_profiles_business.iloc[cid]
+    label = get_cluster_label(cid, biz)
+    cluster_category_section += f"\n**Cluster {cid}（{label}）**：\n\n"
+    for behavior, behavior_label in [('view', '浏览'), ('cart', '加购'), ('purchase', '购买')]:
+        prefs = cluster_category_prefs[(cluster_category_prefs['cluster'] == cid) & (cluster_category_prefs['behavior'] == behavior)]
+        if len(prefs) > 0:
+            cluster_category_section += f"| {behavior_label}排名 | 品类 | 数量 |\n|--------|------|------|\n"
+            for _, r in prefs.head(5).iterrows():
+                cluster_category_section += f"| {int(r['rank'])} | {r['category']} | {int(r['count']):,} |\n"
+            cluster_category_section += "\n"
 
 # ==================== 2.5 覆盖率分析 ====================
 cluster_0_pct = round(cluster_sizes.iloc[0] / len(_labels) * 100, 1)
@@ -349,7 +455,7 @@ report_content = f"""# 第二步：用户数据与商品关联规则分析报告
 - 用户数：{total_users:,} 个
 - 会话数：{total_sessions:,} 个
 - 商品类别数：{total_categories} 个
-- 数据时间范围：2019-10-01 ~ 2019-10-31（仅 1 个月）
+- 数据时间范围：{date_range_str}
 
 > **注意**：时间维度分析（高峰时段、最活跃星期等）仅反映 2019 年 10 月的特征，不一定适用于其他时间段。
 
@@ -376,10 +482,16 @@ report_content = f"""# 第二步：用户数据与商品关联规则分析报告
 - 高峰时段：{peak_hour}时（{peak_hour_count:,}次）
 - 低谷时段：{low_hour}时（{low_hour_count:,}次）
 
+| 时段 | 事件数 | 时段 | 事件数 |
+|------|--------|------|--------|
+{''.join([f"| {h}:00 | {int(hourly_counts.get(h, 0)):,} | {h+12}:00 | {int(hourly_counts.get(h+12, 0)):,} |" + chr(10) for h in range(12)])}
 **按星期分布**：
 - 最活跃：{most_active_day}（{most_active_day_count:,}次）
 - 最不活跃：{least_active_day}（{least_active_day_count:,}次）
 
+| 星期 | 事件数 |
+|------|--------|
+{''.join([f"| {weekday_names[i]} | {int(weekday_counts.get(i, 0)):,} |" + chr(10) for i in range(7)])}
 **工作日vs周末**：
 - 工作日：{weekday_total:,}次（{weekday_pct}%）
 - 周末：{weekend_total:,}次（{weekend_pct}%）
@@ -395,6 +507,11 @@ report_content = f"""# 第二步：用户数据与商品关联规则分析报告
 **购买金额Top5品类**：
 {revenue_top5}
 
+**品类转化率排行（Top15 by 浏览量）**：
+
+| 品类 | 浏览量 | 购买量 | 转化率 |
+|------|--------|--------|--------|
+{''.join([f"| {cat} | {int(cat_funnel.loc[cat, 'view']):,} | {int(cat_funnel.loc[cat, 'purchase']):,} | {cat_funnel.loc[cat, 'conversion_rate']}% |" + chr(10) for cat in top15_cats.index if not pd.isna(cat_funnel.loc[cat, 'conversion_rate'])])}
 ### 3.4 价格区间分析
 
 | 价格区间 | 浏览量 | 购买量 | 转化率 |
@@ -406,6 +523,12 @@ report_content = f"""# 第二步：用户数据与商品关联规则分析报告
 
 {user_stats_section}
 
+### 3.6 热门商品 Top20
+
+| 排名 | 商品ID | 品类 | 品牌 | 价格 | 浏览量 | 购买量 | 金额 | 转化率 |
+|------|--------|------|------|------|--------|--------|------|--------|
+{hot_products_table}
+
 ---
 
 ## 四、用户分群分析
@@ -414,6 +537,12 @@ report_content = f"""# 第二步：用户数据与商品关联规则分析报告
 - 算法：规则分层（单事件会话）+ K-Means（多事件会话）
 - 训练特征：{', '.join(cluster_profiles.columns.tolist())}
 - 标准化：StandardScaler
+- 最优K值选择（多事件会话，肘部法则 + 轮廓系数）：
+
+| K | Inertia | 轮廓系数 |
+|---|---------|---------|
+{''.join([f"| {k} | {inertias[i]:,.2f} | {sil_scores[i]:.4f} |" + chr(10) for i, k in enumerate(_model_data['metadata'].get('k_range', range(2, 6)))])}
+> 选择 K={_model_data['metadata'].get('k_range', range(2, 6))[np.argmax(_model_data['metadata'].get('sil_scores', [0]))]}，轮廓系数最高（{max(_model_data['metadata'].get('sil_scores', [0])):.4f}）。
 - 数据预处理：
   - 移除 session_duration_min > 1440 分钟的异常会话
   - 单事件会话（event_count=1）用规则分为浏览/加购/购买三类
@@ -427,6 +556,12 @@ report_content = f"""# 第二步：用户数据与商品关联规则分析报告
 
 {cluster_profiles_section}
 
+### 4.2a 各聚类品类偏好
+
+各聚类的浏览和购买 Top5 品类分布如下：
+
+{cluster_category_section}
+
 ### 4.3 聚类解释
 
 根据各聚类的业务特征画像，自动归类如下：
@@ -437,7 +572,7 @@ report_content = f"""# 第二步：用户数据与商品关联规则分析报告
 
 ### 4.5 聚类局限性说明
 
-> **数据预处理说明**：原始数据 95.3% 的会话仅有 1 个事件。本次分析采用分层策略：
+> **数据预处理说明**：原始数据 {single_event_pct}% 的会话仅有 1 个事件。本次分析采用分层策略：
 > - 单事件会话用规则分群（浏览/加购/购买），覆盖 {cluster_sizes.iloc[0] + cluster_sizes.iloc[1] + cluster_sizes.iloc[2]:,} 个会话
 > - 多事件会话用 K-Means 聚类，覆盖 {sum(cluster_sizes.iloc[n_single_clusters:]):,} 个会话
 > - 合计覆盖全部 {len(_labels):,} 个会话
@@ -455,7 +590,7 @@ report_content = f"""# 第二步：用户数据与商品关联规则分析报告
 - 算法：Apriori
 - 事务表：以用户为单位，聚合购买记录（仅 purchase 事件），过滤单品类用户后构建共购事务表
 - 最小支持度：0.1
-- 最小提升度：1.0
+- 最小提升度：>1.0（排除独立规则）
 
 ### 5.2 挖掘结果
 
@@ -472,6 +607,11 @@ report_content = f"""# 第二步：用户数据与商品关联规则分析报告
 {rules_table}
 {strongest_rule_section}
 
+**关联网络**：
+
+关联规则形成了包含 {len(set([r['antecedents_str'] if 'antecedents_str' in r.index else str(r['antecedents']) for _, r in rules_for_report.iterrows()] + [r['consequents_str'] if 'consequents_str' in r.index else str(r['consequents']) for _, r in rules_for_report.iterrows()]))} 个品类节点、{len(rules_for_report)} 条有向边的关联网络。主要关联路径：
+
+{''.join([f"- **{r['antecedents_str'] if 'antecedents_str' in rules_for_report.columns else str(r['antecedents'])}** → **{r['consequents_str'] if 'consequents_str' in rules_for_report.columns else str(r['consequents'])}**（提升度 {r['lift']}）" + chr(10) for _, r in rules_for_report.iterrows()])}
 **业务建议**：
 1. 可以将关联性强的商品进行捆绑销售
 2. 在商品详情页推荐关联商品
@@ -613,16 +753,33 @@ for i in range(n_clusters):
     biz = cluster_profiles_business.iloc[i]
     train = cluster_profiles.iloc[i]
     count = int(cluster_sizes.get(i, 0))
-    pct = round(count / len(_labels) * 100, 1)
-    if i < n_single_clusters:
-        seg_label = single_cluster_labels.get(i, f"单事件分群{i}")
-    else:
-        seg_label = f"K-Means Cluster {i - n_single_clusters}"
+    pct = cluster_pcts[i]
+    seg_label = get_cluster_label(i, biz)
     cluster_profiles_json.append({
         'cluster_id': i,
         'label': seg_label,
         'count': count,
         'percentage': pct,
+        'top_categories': {
+            'view': [
+                {'rank': int(row['rank']), 'category': row['category'], 'count': int(row['count'])}
+                for _, row in cluster_category_prefs[
+                    (cluster_category_prefs['cluster'] == i) & (cluster_category_prefs['behavior'] == 'view')
+                ].head(5).iterrows()
+            ],
+            'cart': [
+                {'rank': int(row['rank']), 'category': row['category'], 'count': int(row['count'])}
+                for _, row in cluster_category_prefs[
+                    (cluster_category_prefs['cluster'] == i) & (cluster_category_prefs['behavior'] == 'cart')
+                ].head(5).iterrows()
+            ],
+            'purchase': [
+                {'rank': int(row['rank']), 'category': row['category'], 'count': int(row['count'])}
+                for _, row in cluster_category_prefs[
+                    (cluster_category_prefs['cluster'] == i) & (cluster_category_prefs['behavior'] == 'purchase')
+                ].head(5).iterrows()
+            ],
+        },
         'business_features': {
             'event_count': round(float(biz['event_count']), 2),
             'unique_products': round(float(biz['unique_products']), 2),
@@ -642,47 +799,117 @@ for i in range(n_clusters):
         }
     })
 
-# 关联规则 JSON
+# 关联规则 JSON（全量指标）
+RULE_EXTRA_COLS = ['leverage', 'conviction', 'zhangs_metric', 'jaccard', 'certainty', 'kulczynski']
+
 rules_json = []
 for _, rule in rules_for_report.head(20).iterrows():
     antecedent = rule['antecedents_str'] if 'antecedents_str' in rules_for_report.columns else str(rule['antecedents'])
     consequent = rule['consequents_str'] if 'consequents_str' in rules_for_report.columns else str(rule['consequents'])
-    rules_json.append({
+    entry = {
         'antecedent': antecedent,
         'consequent': consequent,
+        'antecedent_support': round(float(rule['antecedent support']), 4) if 'antecedent support' in rule.index else None,
+        'consequent_support': round(float(rule['consequent support']), 4) if 'consequent support' in rule.index else None,
         'support': round(float(rule['support']), 4),
         'confidence': round(float(rule['confidence']), 4),
         'lift': round(float(rule['lift']), 4),
-    })
+        'representativity': round(float(rule['representativity']), 4) if 'representativity' in rule.index else None,
+    }
+    for col in RULE_EXTRA_COLS:
+        if col in rule.index:
+            val = rule[col]
+            if pd.isna(val):
+                entry[col] = None
+            elif val == float('inf') or val == float('-inf'):
+                entry[col] = None  # inf 视为无定义
+            else:
+                entry[col] = round(float(val), 4)
+    rules_json.append(entry)
 
-# 粗粒度规则 JSON
+# 粗粒度规则 JSON（全量指标）
 rules_l1_json = []
 if has_l1_rules and len(association_rules_l1) > 0:
     for _, rule in association_rules_l1.head(20).iterrows():
         antecedent = rule['antecedents_str'] if 'antecedents_str' in association_rules_l1.columns else str(rule['antecedents'])
         consequent = rule['consequents_str'] if 'consequents_str' in association_rules_l1.columns else str(rule['consequents'])
-        rules_l1_json.append({
+        entry = {
             'antecedent': antecedent,
             'consequent': consequent,
+            'antecedent_support': round(float(rule['antecedent support']), 4) if 'antecedent support' in rule.index else None,
+            'consequent_support': round(float(rule['consequent support']), 4) if 'consequent support' in rule.index else None,
             'support': round(float(rule['support']), 4),
             'confidence': round(float(rule['confidence']), 4),
             'lift': round(float(rule['lift']), 4),
+            'representativity': round(float(rule['representativity']), 4) if 'representativity' in rule.index else None,
+        }
+        for col in RULE_EXTRA_COLS:
+            if col in rule.index:
+                val = rule[col]
+                if pd.isna(val):
+                    entry[col] = None
+                elif val == float('inf') or val == float('-inf'):
+                    entry[col] = None
+                else:
+                    entry[col] = round(float(val), 4)
+        rules_l1_json.append(entry)
+
+# 频繁项集 JSON
+frequent_itemsets_json = []
+for _, row in frequent_itemsets.iterrows():
+    frequent_itemsets_json.append({
+        'itemsets': str(row['itemsets']),
+        'support': round(float(row['support']), 4),
+    })
+
+# 粗粒度频繁项集 JSON
+frequent_itemsets_l1_json = []
+if os.path.exists('result/models/frequent_itemsets_l1.csv'):
+    _fi_l1 = pd.read_csv('result/models/frequent_itemsets_l1.csv')
+    for _, row in _fi_l1.iterrows():
+        frequent_itemsets_l1_json.append({
+            'itemsets': str(row['itemsets']),
+            'support': round(float(row['support']), 4),
         })
 
 # 热门品类 JSON
+view_by_cat_15 = df_with_category[df_with_category['event_type'] == 'view']['category_code'].value_counts().head(15)
+purchase_by_cat_15 = df_with_category[df_with_category['event_type'] == 'purchase']['category_code'].value_counts().head(15)
+revenue_by_cat_15 = purchase_df.groupby('category_code')['price'].sum().sort_values(ascending=False).head(15)
+
 hot_categories_json = {
     'top5_by_views': [{'category': cat, 'count': int(count)} for cat, count in view_by_cat.items()],
     'top5_by_purchases': [{'category': cat, 'count': int(count)} for cat, count in purchase_by_cat.items()],
     'top5_by_revenue': [{'category': cat, 'amount': round(float(amount), 2)} for cat, amount in revenue_by_cat.items()],
+    'top15_by_views': [{'category': cat, 'count': int(count)} for cat, count in view_by_cat_15.items()],
+    'top15_by_purchases': [{'category': cat, 'count': int(count)} for cat, count in purchase_by_cat_15.items()],
+    'top15_by_revenue': [{'category': cat, 'amount': round(float(amount), 2)} for cat, amount in revenue_by_cat_15.items()],
+    'category_conversion_rates': [
+        {
+            'category': str(cat),
+            'views': int(cat_funnel.loc[cat, 'view']) if 'view' in cat_funnel.columns else 0,
+            'purchases': int(cat_funnel.loc[cat, 'purchase']) if 'purchase' in cat_funnel.columns else 0,
+            'conversion_rate': float(cat_funnel.loc[cat, 'conversion_rate']) if not pd.isna(cat_funnel.loc[cat, 'conversion_rate']) else None
+        }
+        for cat in top15_cats.index
+    ],
 }
+
+# 为 time_analysis 补充完整小时/星期数据
+weekday_counts_full = df.groupby('Weekday')['event_type'].count().reindex(range(7), fill_value=0)
+hourly_by_type_dict = {}
+for event_type in ['view', 'cart', 'purchase']:
+    hourly_by_type_dict[event_type] = df[df['event_type'] == event_type].groupby('Hour').size()
 
 summary = {
     'data_overview': {
         'total_events': total_events_raw,
         'total_users': total_users,
         'total_sessions': total_sessions,
+        'sessions_after_outlier_filter': len(_labels),
+        'outlier_sessions_removed': total_sessions - len(_labels),
         'total_categories': total_categories,
-        'date_range': '2019-10-01 ~ 2019-10-31',
+        'date_range': date_range_str,
     },
     'behavior_funnel': {
         'view_count': view_count,
@@ -701,6 +928,12 @@ summary = {
         'least_active_day': least_active_day,
         'weekday_pct': weekday_pct,
         'weekend_pct': weekend_pct,
+        'hourly_counts': {str(h): int(hourly_counts.get(h, 0)) for h in range(24)},
+        'weekday_counts': {weekday_names[i]: int(weekday_counts.get(i, 0)) for i in range(7)},
+        'hourly_by_type': {
+            event_type: {str(h): int(hourly_by_type_series.get(h, 0)) for h in range(24)}
+            for event_type, hourly_by_type_series in hourly_by_type_dict.items()
+        },
     },
     'user_statistics': {
         'total_users': total_users,
@@ -708,13 +941,46 @@ summary = {
         'purchasing_user_rate': purchasing_user_rate,
         'avg_views_per_user': avg_views_per_user,
         'avg_purchases_per_user': avg_purchases_per_user,
+        'avg_sessions_per_user': avg_sessions_per_user,
+        'avg_spend_per_user': avg_spend_per_user,
+        'users_with_views': int((user_event_counts.get('view', pd.Series(dtype=float)) > 0).sum()) if len(user_event_counts) > 0 else 0,
+        'users_with_carts': int((user_event_counts.get('cart', pd.Series(dtype=float)) > 0).sum()) if len(user_event_counts) > 0 else 0,
+        'avg_carts_per_user': round(user_event_counts.get('cart', pd.Series(dtype=float)).mean(), 2) if len(user_event_counts) > 0 else 0,
+        'purchase_count_distribution': {
+            str(int(k)): int(v) for k, v in user_event_counts.get('purchase', pd.Series(dtype=float)).value_counts().sort_index().head(10).items()
+        } if len(user_event_counts) > 0 else {},
     },
     'hot_categories': hot_categories_json,
+    'hot_products_total_count': len(hot_products),
+    'hot_products': [
+        {
+            'rank': i + 1,
+            'product_id': str(row['product_id']),
+            'category': row['category_code'],
+            'brand': row['brand'],
+            'price': round(float(row['price']), 2),
+            'view_count': int(row['view_count']),
+            'purchase_count': int(row['purchase_count']),
+            'revenue': round(float(row['revenue']), 2),
+            'conversion_rate': round(float(row['conversion_rate']), 2),
+        }
+        for i, (_, row) in enumerate(hot_products.head(20).iterrows())
+    ],
     'price_analysis': {
         'best_range': str(best_price_range),
         'best_rate': float(best_price_rate),
         'worst_range': str(worst_price_range),
         'worst_rate': float(worst_price_rate),
+        'ranges': [
+            {
+                'range': label,
+                'event_count': int(price_funnel.loc[label, 'view'] + price_funnel.loc[label].get('cart', 0) + price_funnel.loc[label].get('purchase', 0)) if label in price_funnel.index else 0,
+                'view_count': int(price_funnel.loc[label, 'view']) if label in price_funnel.index and 'view' in price_funnel.columns else 0,
+                'purchase_count': int(price_funnel.loc[label, 'purchase']) if label in price_funnel.index and 'purchase' in price_funnel.columns else 0,
+                'conversion_rate': float(price_funnel.loc[label, 'conversion_rate']) if label in price_funnel.index and not pd.isna(price_funnel.loc[label, 'conversion_rate']) else None
+            }
+            for label in price_labels
+        ],
     },
     'clustering': {
         'method': '规则分层（单事件）+ K-Means（多事件）',
@@ -723,17 +989,34 @@ summary = {
         'n_multi_clusters': n_clusters - n_single_clusters,
         'silhouette_score': round(float(sil_post_merge), 4),
         'profiles': cluster_profiles_json,
+        'elbow_silhouette': {
+            'k_range': list(_model_data['metadata'].get('k_range', range(2, 6))),
+            'inertias': [round(float(v), 2) for v in _model_data['metadata'].get('inertias', [])],
+            'silhouette_scores': [round(float(v), 4) for v in _model_data['metadata'].get('sil_scores', [])],
+        },
     },
     'association_rules': {
         'method': 'Apriori',
         'min_support': 0.1,
         'n_frequent_itemsets': len(frequent_itemsets),
+        'frequent_itemsets': frequent_itemsets_json,
+        'n_frequent_itemsets_l1': len(frequent_itemsets_l1_json),
+        'frequent_itemsets_l1': frequent_itemsets_l1_json,
         'n_rules_fine': len(rules_for_report),
         'n_rules_coarse': len(rules_l1_json),
         'coverage_fine_pct': rule_cross_pct,
         'coverage_coarse_pct': l1_rule_cross_pct,
         'rules_fine': rules_json,
         'rules_coarse': rules_l1_json,
+        'network': {
+            'nodes': list(set(
+                [r['antecedent'] for r in rules_json] + [r['consequent'] for r in rules_json]
+            )),
+            'edges': [
+                {'source': r['antecedent'], 'target': r['consequent'], 'lift': r['lift']}
+                for r in rules_json
+            ],
+        },
     },
 }
 
@@ -771,12 +1054,9 @@ else:
 cluster_size_summary = ""
 for i in range(n_clusters):
     count = cluster_sizes.get(i, 0)
-    pct = round(count / len(_labels) * 100, 1)
+    pct = cluster_pcts[i]
     biz = cluster_profiles_business.iloc[i]
-    if i < n_single_clusters:
-        label = single_cluster_labels.get(i, f"单事件分群{i}")
-    else:
-        label = f"K-Means {i - n_single_clusters}"
+    label = get_cluster_label(i, biz)
     cluster_size_summary += f"  - Cluster {i}（{label}）: {count:,} 个会话（{pct}%）| 均事件 {biz['event_count']:.1f} | 均购买 {biz['purchase_count']:.2f}\n"
 
 readme_content = f"""# Result 目录说明
