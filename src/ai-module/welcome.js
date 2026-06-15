@@ -14,6 +14,7 @@ const resultState = {
 
 const elements = {
   welcomeScreen: document.getElementById("welcomeScreen"),
+  welcomeSelectorTitle: document.getElementById("welcomeSelectorTitle"),
   welcomeResultList: document.getElementById("welcomeResultList"),
   welcomeBackendStatus: document.getElementById("welcomeBackendStatus"),
   welcomeHistoryModal: document.getElementById("welcomeHistoryModal"),
@@ -137,6 +138,7 @@ function renderTabs() {
 }
 
 function renderResultList() {
+  updateSelectorTitle();
   const files = resultState.results[resultState.activeTab] || [];
 
   if (files.length === 0) {
@@ -181,6 +183,10 @@ function renderResultList() {
   });
 
   updateSelectorHint();
+}
+
+function updateSelectorTitle() {
+  elements.welcomeSelectorTitle.textContent = `选择待分析结果（${resultState.selected.size}）`;
 }
 
 function getEmptyStateText() {

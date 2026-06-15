@@ -1,6 +1,5 @@
 # https://zhuanlan.zhihu.com/p/79634564
 import json
-import os
 import csv
 from datetime import datetime
 from pathlib import Path
@@ -13,7 +12,9 @@ from openai import OpenAI
 app = Flask(__name__, static_folder=".", static_url_path="")
 
 ### ------在下方输入deepseek api key------
+
 DEEPSEEK_API_KEY = "sk-??????"
+
 ### ------输入api key后才能正常使用------
 ### 注意！！！commit之前务必检查，不要将api key上传到github！！！
 
@@ -26,9 +27,10 @@ RESULT_CATEGORIES = {
     "reports": RESULT_ROOT / "reports",
     "models": RESULT_ROOT / "models",
 }
-TEXT_EXTENSIONS = {".md", ".txt", ".json", ".log", ".py", ".html", ".js"}
-TABLE_EXTENSIONS = {".csv", ".tsv"}
-MODEL_SELECTABLE_EXTENSIONS = {".csv"}
+ANALYZABLE_FILE_EXTENSIONS = {".csv", ".md", ".json"}
+TEXT_EXTENSIONS = {".md"}
+JSON_EXTENSIONS = {".json"}
+TABLE_EXTENSIONS = {".csv"}
 MAX_CONTEXT_CHARS = 60000
 MAX_TEXT_FILE_CHARS = 12000
 MAX_TABLE_ROWS = 30
@@ -82,6 +84,21 @@ def history_detail(history_id):
         return jsonify({"error": str(error)}), 400
 
     return jsonify({"history": history})
+
+
+@app.delete("/api/history/<history_id>")
+def history_delete(history_id):
+    history_file = resolve_history_file(history_id)
+
+    if not history_file or not history_file.exists():
+        return jsonify({"deleted": False, "id": sanitize_history_id(history_id), "message": "history not found"}), 404
+
+    try:
+        history_file.unlink()
+    except OSError as error:
+        return jsonify({"deleted": False, "id": sanitize_history_id(history_id), "message": str(error)}), 500
+
+    return jsonify({"deleted": True, "id": sanitize_history_id(history_id)})
 
 
 @app.post("/api/history/save")
@@ -171,10 +188,7 @@ def list_result_files():
 
 
 def is_selectable_result_file(category, file_path):
-    if category == "models":
-        return file_path.suffix.lower() in MODEL_SELECTABLE_EXTENSIONS
-
-    return True
+    return file_path.suffix.lower() in ANALYZABLE_FILE_EXTENSIONS
 
 
 def format_file_time(stat):
@@ -349,6 +363,23 @@ def normalize_history_messages(messages):
     return normalized
 
 
+def validate_selected_results(selected_results):
+    if not isinstance(selected_results, list):
+        return "selected_results must be a list"
+
+    for file_info in selected_results:
+        if not isinstance(file_info, dict):
+            return "selected_results contains invalid file info"
+
+        raw_path = file_info.get("path") or file_info.get("file_path") or file_info.get("name") or file_info.get("file_name") or ""
+        suffix = Path(str(raw_path)).suffix.lower()
+
+        if suffix and suffix not in ANALYZABLE_FILE_EXTENSIONS:
+            return f"unsupported file type: {suffix}"
+
+    return ""
+
+
 def build_messages(question, selected_results, conversation_history=None):
     file_context = build_selected_file_context(selected_results)
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
@@ -457,8 +488,13 @@ def build_single_file_context(index, file_info):
     if suffix in TABLE_EXTENSIONS:
         return f"{header}\n\n{read_table_context(resolved_path)}"
 
+    if suffix in TEXT_EXTENSIONS:
+        return f"{header}\n\n{read_text_context(resolved_path)}"
 
-    return f"{header}\n\n文件说明：暂不支持解析该扩展名，当前只传入文件元信息。"
+    if suffix in JSON_EXTENSIONS:
+        return f"{header}\n\n{read_json_context(resolved_path)}"
+
+    return f"{header}\n\n文件说明：不支持该文件类型的分析请求，已拒绝读取和传入。当前仅支持 CSV、Markdown 和 JSON 文件。"
 
 
 def resolve_result_path(raw_path):
@@ -486,8 +522,23 @@ def read_text_context(file_path):
     return f"文件内容：\n```text\n{content}\n```{suffix}"
 
 
+def read_json_context(file_path):
+    try:
+        with file_path.open("r", encoding="utf-8", errors="replace") as file:
+            content = json.dumps(json.load(file), ensure_ascii=False, indent=2)
+        label = "JSON 结构内容"
+    except json.JSONDecodeError:
+        content = file_path.read_text(encoding="utf-8", errors="replace")
+        label = "JSON 文件内容（未通过 JSON 解析，按文本传入）"
+
+    truncated = len(content) > MAX_TEXT_FILE_CHARS
+    content = content[:MAX_TEXT_FILE_CHARS]
+    suffix = "\n[该 JSON 文件内容因长度限制已截断。]" if truncated else ""
+    return f"{label}：\n```json\n{content}\n```{suffix}"
+
+
 def read_table_context(file_path):
-    delimiter = "\t" if file_path.suffix.lower() == ".tsv" else ","
+    delimiter = ","
     rows = []
 
     with file_path.open("r", encoding="utf-8", errors="replace", newline="") as file:
@@ -526,6 +577,10 @@ def chat():
 
     if model not in AVAILABLE_MODELS:
         return jsonify({"error": "unsupported model"}), 400
+
+    selected_results_error = validate_selected_results(selected_results)
+    if selected_results_error:
+        return jsonify({"error": selected_results_error}), 400
 
     @stream_with_context
     def generate():

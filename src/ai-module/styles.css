@@ -759,7 +759,7 @@ svg {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  margin: 18px 0 14px;
+  margin: 18px 0 10px;
 }
 
 .tabs button {
@@ -809,6 +809,51 @@ svg {
   transform: scale(0.99);
 }
 
+.selector-format-guide {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid #d7e5ea;
+  border-radius: 8px;
+  background: #f7fbfc;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.format-guide-title {
+  color: var(--accent-dark);
+  font-weight: 700;
+}
+
+.format-guide-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+  padding: 3px 8px;
+  border: 1px solid #dce8ed;
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.format-guide-item span {
+  color: #344054;
+  font-weight: 600;
+}
+
+.format-guide-item code {
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #e8f3f5;
+  color: var(--accent-dark);
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+}
+
 .result-list {
   display: grid;
   align-content: start;
@@ -831,6 +876,17 @@ svg {
   max-height: 100%;
   padding: 6px 12px 6px 6px;
   overscroll-behavior: contain;
+}
+
+.history-delete-hint {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border: 1px solid #d7e5ea;
+  border-radius: 8px;
+  background: #f7fbfc;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .history-item {
@@ -1011,7 +1067,7 @@ svg {
 
 .selector-footer span,
 .modal-footer span {
-  color: var(--muted);
+  /*color: var(--muted);*/
   font-size: 14px;
 }
 
@@ -1106,7 +1162,7 @@ svg {
 
 .modal {
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
   width: min(860px, 100%);
   max-height: min(720px, calc(100vh - 40px));
   padding: 22px;
@@ -1124,7 +1180,7 @@ svg {
 }
 
 .history-modal {
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
 }
 
 .modal-header {

@@ -39,6 +39,7 @@ const conversationState = {
 
 const elements = {
   appShell: document.getElementById("appShell"),
+  modalTitle: document.getElementById("modalTitle"),
   resultModal: document.getElementById("resultModal"),
   historyModal: document.getElementById("historyModal"),
   clearConfirmModal: document.getElementById("clearConfirmModal"),
@@ -246,8 +247,13 @@ function renderTabs() {
 }
 
 function renderResultLists() {
+  updateSelectorTitle();
   renderResultList(elements.modalResultList);
   updateSelectorHint();
+}
+
+function updateSelectorTitle() {
+  elements.modalTitle.textContent = `选择待分析结果（${resultState.draftSelected.size}）`;
 }
 
 function renderResultList(container) {
@@ -923,12 +929,33 @@ function addAssistantMessage(message) {
   scrollToBottom();
 }
 
-function clearChat() {
+async function clearChat() {
+  const historyId = conversationState.id;
+
   conversationState.id = null;
   conversationState.messages = [];
   resetMessagesToInitial();
   closeModal(elements.clearConfirmModal);
   showToast("对话已清空");
+
+  if (!historyId) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/history/${encodeURIComponent(historyId)}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok && response.status !== 404) {
+      throw new Error("history delete unavailable");
+    }
+
+    historyState.records = historyState.records.filter((record) => record.id !== historyId);
+    renderHistoryList();
+  } catch (error) {
+    showToast("对话已清空，但历史记录删除失败", "warning");
+  }
 }
 
 function openModal(modal) {

@@ -16,7 +16,7 @@
 
       <section class="selector-card" aria-label="初次选择待分析结果">
         <div class="selector-header">
-          <h2>选择待分析结果</h2>
+          <h2 id="welcomeSelectorTitle">选择待分析结果（0）</h2>
           <button class="icon-button" type="button" id="welcomeRefreshResultsButton" aria-label="刷新文件列表" title="刷新文件列表">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.8-4.3L13 11h8V3l-3.3 3.3Z"></path>
@@ -41,8 +41,21 @@
               </svg>
               <span>models</span>
             </span>
-            <strong>模型结果(.csv)</strong>
+            <strong>模型结果</strong>
           </button>
+        </div>
+
+        <div class="selector-format-guide" aria-label="支持分析的文件类型">
+          <span class="format-guide-title">支持格式</span>
+          <span class="format-guide-item">
+            <span>分析报告</span>
+            <code>.md</code>
+            <code>.json</code>
+          </span>
+          <span class="format-guide-item">
+            <span>模型文件</span>
+            <code>.csv</code>
+          </span>
         </div>
 
         <div class="result-list" id="welcomeResultList"></div>
@@ -75,9 +88,15 @@
               <path d="M17.7 6.3A8 8 0 1 0 20 12h-2a6 6 0 1 1-1.8-4.3L13 11h8V3l-3.3 3.3Z"></path>
             </svg>
           </button>
-          <button class="icon-button" type="button" id="welcomeCloseHistoryButton" aria-label="关闭">×</button>
+          <button class="icon-button" type="button" id="welcomeCloseHistoryButton" aria-label="关闭">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4 6.4 5Z"></path>
+            </svg>
+          </button>
         </div>
       </div>
+
+      <p class="history-delete-hint">如需删除历史记录，请先进入待删除的对话，再点击页面右上角“清空对话”按钮。</p>
 
       <div class="history-list" id="welcomeHistoryList"></div>
 
