@@ -1,0 +1,762 @@
+{
+  "meta": {
+    "description": "电商商品推荐策略结果",
+    "strategies": [
+      "hot_by_purchase",
+      "hot_by_revenue",
+      "association",
+      "cluster_preference"
+    ],
+    "total_recommendations": 79
+  },
+  "hot_recommendations": [
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1004856,
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 130.76,
+      "purchase_count": 76,
+      "revenue": 9972.05,
+      "conversion_rate": 5.29
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1004767,
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 254.82,
+      "purchase_count": 65,
+      "revenue": 16181.63,
+      "conversion_rate": 4.95
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 4804056,
+      "category_code": "electronics.audio.headphone",
+      "brand": "apple",
+      "price": 161.98,
+      "purchase_count": 46,
+      "revenue": 7394.78,
+      "conversion_rate": 7.34
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1004870,
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 286.86,
+      "purchase_count": 43,
+      "revenue": 12249.2,
+      "conversion_rate": 6.72
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1004833,
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 174.76,
+      "purchase_count": 37,
+      "revenue": 6371.56,
+      "conversion_rate": 5.42
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1005115,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 975.57,
+      "purchase_count": 35,
+      "revenue": 34499.06,
+      "conversion_rate": 2.89
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1002544,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 464.13,
+      "purchase_count": 35,
+      "revenue": 16128.06,
+      "conversion_rate": 5.42
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1004249,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 739.81,
+      "purchase_count": 31,
+      "revenue": 22896.59,
+      "conversion_rate": 4.21
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1002524,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 515.67,
+      "purchase_count": 30,
+      "revenue": 15860.88,
+      "conversion_rate": 7.33
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1004873,
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 388.81,
+      "purchase_count": 24,
+      "revenue": 8958.26,
+      "conversion_rate": 4.98
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1002633,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 360.08,
+      "purchase_count": 24,
+      "revenue": 8604.2,
+      "conversion_rate": 5.88
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1004741,
+      "category_code": "electronics.smartphone",
+      "brand": "xiaomi",
+      "price": 185.71,
+      "purchase_count": 23,
+      "revenue": 4392.2,
+      "conversion_rate": 4.41
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1005105,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 1415.48,
+      "purchase_count": 21,
+      "revenue": 29575.15,
+      "conversion_rate": 2.93
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1004565,
+      "category_code": "electronics.smartphone",
+      "brand": "huawei",
+      "price": 177.47,
+      "purchase_count": 20,
+      "revenue": 3372.11,
+      "conversion_rate": 5.43
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1003306,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 587.56,
+      "purchase_count": 18,
+      "revenue": 10508.84,
+      "conversion_rate": 4.99
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1005160,
+      "category_code": "electronics.smartphone",
+      "brand": "xiaomi",
+      "price": 231.41,
+      "purchase_count": 17,
+      "revenue": 3746.93,
+      "conversion_rate": 3.91
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1004785,
+      "category_code": "electronics.smartphone",
+      "brand": "huawei",
+      "price": 278.55,
+      "purchase_count": 17,
+      "revenue": 4637.92,
+      "conversion_rate": 4.38
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 4804295,
+      "category_code": "electronics.audio.headphone",
+      "brand": "xiaomi",
+      "price": 23.13,
+      "purchase_count": 17,
+      "revenue": 385.3,
+      "conversion_rate": 4.53
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1004836,
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 241.19,
+      "purchase_count": 17,
+      "revenue": 3923.97,
+      "conversion_rate": 3.63
+    },
+    {
+      "strategy": "hot_by_purchase",
+      "product_id": 1004750,
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 197.43,
+      "purchase_count": 16,
+      "revenue": 3147.46,
+      "conversion_rate": 4.36
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1005115,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 975.57,
+      "purchase_count": 35,
+      "revenue": 34499.06,
+      "conversion_rate": 2.89
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1005105,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 1415.48,
+      "purchase_count": 21,
+      "revenue": 29575.15,
+      "conversion_rate": 2.93
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1004249,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 739.81,
+      "purchase_count": 31,
+      "revenue": 22896.59,
+      "conversion_rate": 4.21
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1004767,
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 254.82,
+      "purchase_count": 65,
+      "revenue": 16181.63,
+      "conversion_rate": 4.95
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1002544,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 464.13,
+      "purchase_count": 35,
+      "revenue": 16128.06,
+      "conversion_rate": 5.42
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1002524,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 515.67,
+      "purchase_count": 30,
+      "revenue": 15860.88,
+      "conversion_rate": 7.33
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1005135,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 1747.79,
+      "purchase_count": 9,
+      "revenue": 15632.15,
+      "conversion_rate": 2.45
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1005116,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 1052.79,
+      "purchase_count": 14,
+      "revenue": 14769.35,
+      "conversion_rate": 8.24
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1003317,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 957.53,
+      "purchase_count": 14,
+      "revenue": 13303.8,
+      "conversion_rate": 3.83
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1004870,
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 286.86,
+      "purchase_count": 43,
+      "revenue": 12249.2,
+      "conversion_rate": 6.72
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1004659,
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 787.18,
+      "purchase_count": 15,
+      "revenue": 11016.91,
+      "conversion_rate": 4.39
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1003306,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 587.56,
+      "purchase_count": 18,
+      "revenue": 10508.84,
+      "conversion_rate": 4.99
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1004856,
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 130.76,
+      "purchase_count": 76,
+      "revenue": 9972.05,
+      "conversion_rate": 5.29
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1005106,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 1541.87,
+      "purchase_count": 6,
+      "revenue": 9117.17,
+      "conversion_rate": 5.83
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1004873,
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 388.81,
+      "purchase_count": 24,
+      "revenue": 8958.26,
+      "conversion_rate": 4.98
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1002633,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 360.08,
+      "purchase_count": 24,
+      "revenue": 8604.2,
+      "conversion_rate": 5.88
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1004237,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 1080.72,
+      "purchase_count": 7,
+      "revenue": 7607.79,
+      "conversion_rate": 3.8
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 4804056,
+      "category_code": "electronics.audio.headphone",
+      "brand": "apple",
+      "price": 161.98,
+      "purchase_count": 46,
+      "revenue": 7394.78,
+      "conversion_rate": 7.34
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1004227,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 1011.58,
+      "purchase_count": 7,
+      "revenue": 7028.28,
+      "conversion_rate": 4.55
+    },
+    {
+      "strategy": "hot_by_revenue",
+      "product_id": 1005124,
+      "category_code": "electronics.smartphone",
+      "brand": "apple",
+      "price": 1634.51,
+      "purchase_count": 4,
+      "revenue": 6545.25,
+      "conversion_rate": 3.96
+    }
+  ],
+  "association_recommendations": [
+    {
+      "strategy": "association",
+      "antecedent": "appliances.kitchen.coffee_machine",
+      "consequent": "electronics.clocks",
+      "support": 0.111111,
+      "confidence": 1.0,
+      "lift": 4.5,
+      "suggestion": "浏览/购买了「appliances.kitchen.coffee_machine」的用户，同时推荐「electronics.clocks」（提升度 4.50，支持度 0.1111）"
+    },
+    {
+      "strategy": "association",
+      "antecedent": "electronics.video.tv",
+      "consequent": "appliances.kitchen.washer",
+      "support": 0.111111,
+      "confidence": 1.0,
+      "lift": 4.5,
+      "suggestion": "浏览/购买了「electronics.video.tv」的用户，同时推荐「appliances.kitchen.washer」（提升度 4.50，支持度 0.1111）"
+    },
+    {
+      "strategy": "association",
+      "antecedent": "appliances.kitchen.oven",
+      "consequent": "electronics.smartphone",
+      "support": 0.111111,
+      "confidence": 1.0,
+      "lift": 1.5,
+      "suggestion": "浏览/购买了「appliances.kitchen.oven」的用户，同时推荐「electronics.smartphone」（提升度 1.50，支持度 0.1111）"
+    },
+    {
+      "strategy": "association",
+      "antecedent": "electronics.audio.headphone",
+      "consequent": "electronics.smartphone",
+      "support": 0.444444,
+      "confidence": 0.8,
+      "lift": 1.2,
+      "suggestion": "浏览/购买了「electronics.audio.headphone」的用户，同时推荐「electronics.smartphone」（提升度 1.20，支持度 0.4444）"
+    }
+  ],
+  "cluster_recommendations": [
+    {
+      "strategy": "cluster_preference",
+      "cluster_id": 0,
+      "cluster_description": "Cluster 0: 均事件 1.0 次, 均购买 0.0 次, 均金额 0.0",
+      "preferred_category": "electronics.smartphone",
+      "preferred_behavior": "cart",
+      "hot_products_in_category": [
+        {
+          "product_id": 1004856,
+          "brand": "samsung",
+          "price": 130.76,
+          "purchase_count": 76,
+          "revenue": 9972.05
+        },
+        {
+          "product_id": 1004767,
+          "brand": "samsung",
+          "price": 254.82,
+          "purchase_count": 65,
+          "revenue": 16181.63
+        },
+        {
+          "product_id": 1004870,
+          "brand": "samsung",
+          "price": 286.86,
+          "purchase_count": 43,
+          "revenue": 12249.2
+        },
+        {
+          "product_id": 1004833,
+          "brand": "samsung",
+          "price": 174.76,
+          "purchase_count": 37,
+          "revenue": 6371.56
+        },
+        {
+          "product_id": 1005115,
+          "brand": "apple",
+          "price": 975.57,
+          "purchase_count": 35,
+          "revenue": 34499.06
+        }
+      ]
+    },
+    {
+      "strategy": "cluster_preference",
+      "cluster_id": 1,
+      "cluster_description": "Cluster 1: 均事件 1.0 次, 均购买 0.0 次, 均金额 0.0",
+      "preferred_category": "electronics.smartphone",
+      "preferred_behavior": "purchase",
+      "hot_products_in_category": [
+        {
+          "product_id": 1004856,
+          "brand": "samsung",
+          "price": 130.76,
+          "purchase_count": 76,
+          "revenue": 9972.05
+        },
+        {
+          "product_id": 1004767,
+          "brand": "samsung",
+          "price": 254.82,
+          "purchase_count": 65,
+          "revenue": 16181.63
+        },
+        {
+          "product_id": 1004870,
+          "brand": "samsung",
+          "price": 286.86,
+          "purchase_count": 43,
+          "revenue": 12249.2
+        },
+        {
+          "product_id": 1004833,
+          "brand": "samsung",
+          "price": 174.76,
+          "purchase_count": 37,
+          "revenue": 6371.56
+        },
+        {
+          "product_id": 1005115,
+          "brand": "apple",
+          "price": 975.57,
+          "purchase_count": 35,
+          "revenue": 34499.06
+        }
+      ]
+    },
+    {
+      "strategy": "cluster_preference",
+      "cluster_id": 2,
+      "cluster_description": "Cluster 2: 均事件 1.0 次, 均购买 1.0 次, 均金额 365.58719075144506",
+      "preferred_category": "electronics.smartphone",
+      "preferred_behavior": "purchase",
+      "hot_products_in_category": [
+        {
+          "product_id": 1004856,
+          "brand": "samsung",
+          "price": 130.76,
+          "purchase_count": 76,
+          "revenue": 9972.05
+        },
+        {
+          "product_id": 1004767,
+          "brand": "samsung",
+          "price": 254.82,
+          "purchase_count": 65,
+          "revenue": 16181.63
+        },
+        {
+          "product_id": 1004870,
+          "brand": "samsung",
+          "price": 286.86,
+          "purchase_count": 43,
+          "revenue": 12249.2
+        },
+        {
+          "product_id": 1004833,
+          "brand": "samsung",
+          "price": 174.76,
+          "purchase_count": 37,
+          "revenue": 6371.56
+        },
+        {
+          "product_id": 1005115,
+          "brand": "apple",
+          "price": 975.57,
+          "purchase_count": 35,
+          "revenue": 34499.06
+        }
+      ]
+    },
+    {
+      "strategy": "cluster_preference",
+      "cluster_id": 3,
+      "cluster_description": "Cluster 3: 均事件 2.0 次, 均购买 0.0 次, 均金额 0.0",
+      "preferred_category": "electronics.smartphone",
+      "preferred_behavior": "cart",
+      "hot_products_in_category": [
+        {
+          "product_id": 1004856,
+          "brand": "samsung",
+          "price": 130.76,
+          "purchase_count": 76,
+          "revenue": 9972.05
+        },
+        {
+          "product_id": 1004767,
+          "brand": "samsung",
+          "price": 254.82,
+          "purchase_count": 65,
+          "revenue": 16181.63
+        },
+        {
+          "product_id": 1004870,
+          "brand": "samsung",
+          "price": 286.86,
+          "purchase_count": 43,
+          "revenue": 12249.2
+        },
+        {
+          "product_id": 1004833,
+          "brand": "samsung",
+          "price": 174.76,
+          "purchase_count": 37,
+          "revenue": 6371.56
+        },
+        {
+          "product_id": 1005115,
+          "brand": "apple",
+          "price": 975.57,
+          "purchase_count": 35,
+          "revenue": 34499.06
+        }
+      ]
+    },
+    {
+      "strategy": "cluster_preference",
+      "cluster_id": 4,
+      "cluster_description": "Cluster 4: 均事件 2.126315789473684 次, 均购买 1.0421052631578946 次, 均金额 397.9302105263158",
+      "preferred_category": "electronics.smartphone",
+      "preferred_behavior": "purchase",
+      "hot_products_in_category": [
+        {
+          "product_id": 1004856,
+          "brand": "samsung",
+          "price": 130.76,
+          "purchase_count": 76,
+          "revenue": 9972.05
+        },
+        {
+          "product_id": 1004767,
+          "brand": "samsung",
+          "price": 254.82,
+          "purchase_count": 65,
+          "revenue": 16181.63
+        },
+        {
+          "product_id": 1004870,
+          "brand": "samsung",
+          "price": 286.86,
+          "purchase_count": 43,
+          "revenue": 12249.2
+        },
+        {
+          "product_id": 1004833,
+          "brand": "samsung",
+          "price": 174.76,
+          "purchase_count": 37,
+          "revenue": 6371.56
+        },
+        {
+          "product_id": 1005115,
+          "brand": "apple",
+          "price": 975.57,
+          "purchase_count": 35,
+          "revenue": 34499.06
+        }
+      ]
+    },
+    {
+      "strategy": "cluster_preference",
+      "cluster_id": 5,
+      "cluster_description": "Cluster 5: 均事件 2.1373626373626373 次, 均购买 0.0 次, 均金额 0.0",
+      "preferred_category": "electronics.audio.headphone",
+      "preferred_behavior": "cart",
+      "hot_products_in_category": [
+        {
+          "product_id": 4804056,
+          "brand": "apple",
+          "price": 161.98,
+          "purchase_count": 46,
+          "revenue": 7394.78
+        },
+        {
+          "product_id": 4804295,
+          "brand": "xiaomi",
+          "price": 23.13,
+          "purchase_count": 17,
+          "revenue": 385.3
+        },
+        {
+          "product_id": 4804055,
+          "brand": "apple",
+          "price": 189.91,
+          "purchase_count": 11,
+          "revenue": 2097.42
+        },
+        {
+          "product_id": 4803977,
+          "brand": "samsung",
+          "price": 107.8,
+          "purchase_count": 8,
+          "revenue": 860.15
+        },
+        {
+          "product_id": 4802888,
+          "brand": "apple",
+          "price": 35.78,
+          "purchase_count": 3,
+          "revenue": 92.52
+        }
+      ]
+    },
+    {
+      "strategy": "cluster_preference",
+      "cluster_id": 6,
+      "cluster_description": "Cluster 6: 均事件 3.296208530805687 次, 均购买 0.0 次, 均金额 0.0",
+      "preferred_category": "electronics.smartphone",
+      "preferred_behavior": "cart",
+      "hot_products_in_category": [
+        {
+          "product_id": 1004856,
+          "brand": "samsung",
+          "price": 130.76,
+          "purchase_count": 76,
+          "revenue": 9972.05
+        },
+        {
+          "product_id": 1004767,
+          "brand": "samsung",
+          "price": 254.82,
+          "purchase_count": 65,
+          "revenue": 16181.63
+        },
+        {
+          "product_id": 1004870,
+          "brand": "samsung",
+          "price": 286.86,
+          "purchase_count": 43,
+          "revenue": 12249.2
+        },
+        {
+          "product_id": 1004833,
+          "brand": "samsung",
+          "price": 174.76,
+          "purchase_count": 37,
+          "revenue": 6371.56
+        },
+        {
+          "product_id": 1005115,
+          "brand": "apple",
+          "price": 975.57,
+          "purchase_count": 35,
+          "revenue": 34499.06
+        }
+      ]
+    }
+  ]
+}

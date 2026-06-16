@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>电商数据分析仪表盘</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .container { max-width: 1400px; margin: 0 auto; }
+  h1 {
+    text-align: center; color: white; font-size: 2.2em;
+    margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .subtitle { text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 30px; font-size: 1.1em; }
+
+  /* 指标卡片 */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px; margin-bottom: 30px;
+  }
+  .kpi-card {
+    background: white; border-radius: 16px; padding: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center;
+    transition: transform 0.2s;
+  }
+  .kpi-card:hover { transform: translateY(-4px); }
+  .kpi-icon { font-size: 2em; margin-bottom: 8px; }
+  .kpi-value { font-size: 2em; font-weight: 700; color: #333; }
+  .kpi-label { font-size: 0.9em; color: #888; margin-top: 4px; }
+  .kpi-sub { font-size: 0.8em; color: #aaa; margin-top: 2px; }
+
+  /* 图表区 */
+  .chart-section {
+    background: white; border-radius: 16px; padding: 24px;
+    margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+  .chart-section h2 {
+    font-size: 1.3em; color: #333; margin-bottom: 16px;
+    padding-bottom: 8px; border-bottom: 2px solid #667eea;
+  }
+  .chart-section img {
+    width: 100%; border-radius: 8px; display: block;
+  }
+
+  .two-col {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+
+  .footer {
+    text-align: center; color: rgba(255,255,255,0.6);
+    margin-top: 40px; font-size: 0.85em;
+  }
+
+  @media (max-width: 768px) {
+    .two-col { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📊 电商智能分析仪表盘</h1>
+  <p class="subtitle">用户行为分析 · 商品关联规则 · 智能推荐策略</p>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-icon">👥</div>
+      <div class="kpi-value">81,103</div>
+      <div class="kpi-label">总用户数</div>
+      <div class="kpi-sub">88,070 个会话</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">👁️</div>
+      <div class="kpi-value">88,393</div>
+      <div class="kpi-label">总浏览</div>
+      <div class="kpi-sub">浏览→加购 2.91%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">🛒</div>
+      <div class="kpi-value">2,571</div>
+      <div class="kpi-label">总加购</div>
+      <div class="kpi-sub">加购→购买 71.14%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">💳</div>
+      <div class="kpi-value">1,829</div>
+      <div class="kpi-label">总购买</div>
+      <div class="kpi-sub">浏览→购买 2.07%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">🎯</div>
+      <div class="kpi-value">7</div>
+      <div class="kpi-label">用户分群</div>
+      <div class="kpi-sub">轮廓系数 0.9425</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">🔗</div>
+      <div class="kpi-value">51</div>
+      <div class="kpi-label">推荐策略条目</div>
+      <div class="kpi-sub">40热门 + 4关联 + 7群体</div>
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <h2>📈 用户行为转化漏斗</h2>
+    <img src="figures/step4_funnel.png" alt="行为转化漏斗" onerror="this.parentElement.innerHTML='<p style=color:#999>图表待生成：请运行 step4_visualization.py</p>'">
+  </div>
+
+  <div class="two-col">
+    <div class="chart-section">
+      <h2>🏷️ 品类热度 Top 15</h2>
+      <img src="figures/step4_category_ranking.png" alt="品类热度" onerror="this.style.display='none'">
+    </div>
+    <div class="chart-section">
+      <h2>🎯 用户分群雷达图</h2>
+      <img src="figures/step4_cluster_radar.png" alt="雷达图" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="chart-section">
+      <h2>📍 用户分群 PCA 散点图</h2>
+      <img src="figures/cluster_pca.png" alt="PCA 散点" onerror="this.style.display='none'">
+    </div>
+    <div class="chart-section">
+      <h2>🕸️ 商品关联网络</h2>
+      <img src="figures/association_network.png" alt="关联网络" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <h2>💡 推荐策略效果对比</h2>
+    <img src="figures/step4_recommendation_comparison.png" alt="推荐对比" onerror="this.parentElement.innerHTML='<p style=color:#999>图表待生成</p>'">
+  </div>
+
+  <div class="footer">
+    <p>电商智能分析系统 · 自动生成于 2026-06-16 22:06</p>
+  </div>
+</div>
+</body>
+</html>
