@@ -3,8 +3,10 @@
 # PDF 导出当前依赖 docx2pdf，运行机器需要安装 Microsoft Word
 import argparse
 import json
+import platform
 import re
 import sys
+import tempfile
 from datetime import datetime
 from html import escape as escape_html
 from pathlib import Path
@@ -24,6 +26,12 @@ ROLE_LABELS = {
 }
 DOCUMENT_FONT_NAME = "DengXian"
 DOCUMENT_COLOR = "000000"
+EXPORT_FORMAT_ALIASES = {
+    "markdown": "markdown",
+    "md": "markdown",
+    "docx": "docx",
+    "pdf": "pdf",
+}
 
 
 def read_history(history_path):
@@ -40,9 +48,10 @@ def read_history(history_path):
     return history
 
 
-def export_full_history(history_path=DEFAULT_HISTORY_PATH, output_dir=DEFAULT_OUTPUT_DIR, base_name=None, log=print):
+def export_full_history(history_path=DEFAULT_HISTORY_PATH, output_dir=DEFAULT_OUTPUT_DIR, base_name=None, file_format="markdown", log=print):
     history_path = Path(history_path).resolve()
     output_dir = Path(output_dir).resolve()
+    export_format = normalize_export_format(file_format)
     log(f"读取历史对话：{history_path}")
     history = read_history(history_path)
 
@@ -50,25 +59,40 @@ def export_full_history(history_path=DEFAULT_HISTORY_PATH, output_dir=DEFAULT_OU
     base_name = base_name or f"{history.get('id') or history_path.stem}_conversation"
     log(f"导出目录：{output_dir}")
     log(f"导出文件名：{base_name}")
+    log(f"导出格式：{export_format}")
 
     md_path = output_dir / f"{base_name}.md"
     docx_path = output_dir / f"{base_name}.docx"
     pdf_path = output_dir / f"{base_name}.pdf"
 
     markdown_content = build_export_markdown(history)
-    log(f"生成 Markdown：{md_path}")
-    md_path.write_text(markdown_content, encoding="utf-8")
-    log(f"生成 Word 文档：{docx_path}")
-    convert_markdown_to_docx(md_path, docx_path)
-    log(f"生成 PDF：{pdf_path}")
-    convert_docx_to_pdf(docx_path, pdf_path, log=log)
+
+    if export_format == "markdown":
+        log(f"生成 Markdown：{md_path}")
+        md_path.write_text(markdown_content, encoding="utf-8")
+        paths = {"markdown": md_path}
+    elif export_format == "docx":
+        log(f"生成 Word 文档：{docx_path}")
+        convert_markdown_content_to_docx(markdown_content, docx_path)
+        paths = {"docx": docx_path}
+    else:
+        log(f"生成 PDF：{pdf_path}")
+        with tempfile.TemporaryDirectory(prefix="ai-export-") as temp_dir:
+            temp_docx_path = Path(temp_dir) / f"{base_name}.docx"
+            convert_markdown_content_to_docx(markdown_content, temp_docx_path)
+            convert_docx_to_pdf(temp_docx_path, pdf_path, log=log)
+        paths = {"pdf": pdf_path}
+
     log("导出完成")
 
-    return {
-        "markdown": md_path,
-        "docx": docx_path,
-        "pdf": pdf_path,
-    }
+    return paths
+
+
+def normalize_export_format(file_format):
+    export_format = EXPORT_FORMAT_ALIASES.get(str(file_format or "").lower())
+    if not export_format:
+        raise ValueError("unsupported export format")
+    return export_format
 
 
 def build_export_markdown(history):
@@ -314,6 +338,18 @@ def convert_markdown_to_docx(md_path, docx_path):
     polish_docx(docx_path)
 
 
+def convert_markdown_content_to_docx(markdown_content, docx_path):
+    docx_path = Path(docx_path)
+    with tempfile.NamedTemporaryFile("w", suffix=".md", encoding="utf-8", delete=False) as temp_file:
+        temp_file.write(markdown_content)
+        temp_md_path = Path(temp_file.name)
+
+    try:
+        convert_markdown_to_docx(temp_md_path, docx_path)
+    finally:
+        temp_md_path.unlink(missing_ok=True)
+
+
 def polish_docx(docx_path):
     document = Document(docx_path)
     polish_document_styles(document)
@@ -422,12 +458,13 @@ def find_role_label(text):
 
 
 def convert_docx_to_pdf(docx_path, pdf_path, log=print):
-    from docx2pdf import convert as docx2pdf_convert
-
     word_error_message = "PDF 导出失败：未检测到可用的 Microsoft Word，或当前环境无法打开 Microsoft Word。请确认本机已安装 Microsoft Word 后重试。"
 
     try:
-        docx2pdf_convert(str(docx_path), str(pdf_path))
+        if platform.system() == "Windows":
+            convert_docx_to_pdf_with_windows_word(docx_path, pdf_path)
+        else:
+            convert_docx_to_pdf_with_docx2pdf(docx_path, pdf_path)
     except Exception as error:
         log(word_error_message)
         raise RuntimeError(f"{word_error_message} 原始错误：{error}") from error
@@ -437,11 +474,42 @@ def convert_docx_to_pdf(docx_path, pdf_path, log=print):
         raise RuntimeError(f"{word_error_message} 未生成 PDF 文件：{pdf_path}")
 
 
+def convert_docx_to_pdf_with_docx2pdf(docx_path, pdf_path):
+    from docx2pdf import convert as docx2pdf_convert
+
+    docx2pdf_convert(str(docx_path), str(pdf_path))
+
+
+def convert_docx_to_pdf_with_windows_word(docx_path, pdf_path):
+    import pythoncom
+    import win32com.client
+
+    docx_path = str(Path(docx_path).resolve())
+    pdf_path = str(Path(pdf_path).resolve())
+    word = None
+    document = None
+    pythoncom.CoInitialize()
+
+    try:
+        word = win32com.client.DispatchEx("Word.Application")
+        word.Visible = False
+        word.DisplayAlerts = 0
+        document = word.Documents.Open(docx_path, ReadOnly=True)
+        document.SaveAs(pdf_path, FileFormat=17)
+    finally:
+        if document is not None:
+            document.Close(False)
+        if word is not None:
+            word.Quit()
+        pythoncom.CoUninitialize()
+
+
 def parse_args():
-    parser = argparse.ArgumentParser(description="导出 AI 完整对话记录为 Markdown、docx 和 pdf。")
+    parser = argparse.ArgumentParser(description="导出 AI 完整对话记录为指定格式。")
     parser.add_argument("--history", default=str(DEFAULT_HISTORY_PATH), help="历史对话 JSON 文件路径。")
     parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR), help="导出文件目录。")
     parser.add_argument("--base-name", default=None, help="导出文件名，不包含扩展名。")
+    parser.add_argument("--format", default="markdown", choices=sorted(EXPORT_FORMAT_ALIASES), help="导出文件格式。")
     return parser.parse_args()
 
 
@@ -449,7 +517,7 @@ def main():
     args = parse_args()
 
     try:
-        paths = export_full_history(args.history, args.output_dir, args.base_name)
+        paths = export_full_history(args.history, args.output_dir, args.base_name, args.format)
     except Exception as error:
         print(f"导出失败：{error}", file=sys.stderr)
         return 1

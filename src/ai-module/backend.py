@@ -126,14 +126,20 @@ def history_save():
 # 导出当前对话
 @app.post("/api/history/<history_id>/export")
 def history_export(history_id):
+    payload = request.get_json(silent=True) or {}
+    requested_format = str(payload.get("format") or "markdown").lower()
+    export_format = EXPORT_FORMATS.get(requested_format)
     history_file = resolve_history_file(history_id)
     sanitized_id = sanitize_history_id(history_id)
+
+    if not export_format:
+        return jsonify({"error": "unsupported export format"}), 400
 
     if not history_file or not history_file.exists():
         return jsonify({"error": "history not found"}), 404
 
     try:
-        paths = export_full_history(history_file, REPORT_ROOT, build_export_base_name(sanitized_id))
+        paths = export_full_history(history_file, REPORT_ROOT, build_export_base_name(sanitized_id), requested_format)
     except Exception as error:
         return jsonify({"error": str(error)}), 500
     finally:

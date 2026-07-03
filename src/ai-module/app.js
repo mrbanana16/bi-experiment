@@ -1121,6 +1121,12 @@ async function exportConversation(fileFormat) {
 
     const response = await fetch(`/api/history/${encodeURIComponent(historyId)}/export`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        format: fileFormat,
+      }),
     });
 
     if (!response.ok) {

@@ -15,3 +15,4 @@ pypandoc_binary
 python-docx
 # PDF export uses docx2pdf and requires Microsoft Word installed on the host machine.
 docx2pdf
+pywin32; platform_system == "Windows"
