@@ -37,11 +37,20 @@ const conversationState = {
   messages: [],
 };
 
+const exportState = {
+  target: {
+    type: "conversation",
+    messageIndex: null,
+    historyId: null,
+  },
+};
+
 const elements = {
   appShell: document.getElementById("appShell"),
   modalTitle: document.getElementById("modalTitle"),
   resultModal: document.getElementById("resultModal"),
   historyModal: document.getElementById("historyModal"),
+  exportModal: document.getElementById("exportModal"),
   clearConfirmModal: document.getElementById("clearConfirmModal"),
   modelPicker: document.getElementById("modelPicker"),
   modelSelectButton: document.getElementById("modelSelectButton"),
@@ -50,11 +59,13 @@ const elements = {
   currentModelTag: document.getElementById("currentModelTag"),
   modelKindIcon: document.getElementById("modelKindIcon"),
   openSelectorButton: document.getElementById("openSelectorButton"),
+  openExportButton: document.getElementById("openExportButton"),
   openHistoryButton: document.getElementById("openHistoryButton"),
   refreshResultsButton: document.getElementById("refreshResultsButton"),
   closeModalButton: document.getElementById("closeModalButton"),
   confirmSelectionButton: document.getElementById("confirmSelectionButton"),
   closeHistoryButton: document.getElementById("closeHistoryButton"),
+  closeExportButton: document.getElementById("closeExportButton"),
   refreshHistoryButton: document.getElementById("refreshHistoryButton"),
   clearChatButton: document.getElementById("clearChatButton"),
   cancelClearButton: document.getElementById("cancelClearButton"),
@@ -65,6 +76,8 @@ const elements = {
   historyList: document.getElementById("historyList"),
   selectorStatus: document.getElementById("selectorStatus"),
   historyStatus: document.getElementById("historyStatus"),
+  exportStatus: document.getElementById("exportStatus"),
+  exportFormatButtons: Array.from(document.querySelectorAll("[data-export-format]")),
   tabs: Array.from(document.querySelectorAll(".tabs button")),
   chatForm: document.getElementById("chatForm"),
   questionInput: document.getElementById("questionInput"),
@@ -75,6 +88,7 @@ const elements = {
 
 let toastTimer = null;
 let isGenerating = false;
+let isExporting = false;
 
 document.addEventListener("DOMContentLoaded", initializeApp);
 
@@ -95,11 +109,13 @@ async function initializeApp() {
 
 function bindEvents() {
   elements.openSelectorButton.addEventListener("click", () => openResultModal());
+  elements.openExportButton.addEventListener("click", openExportModal);
   elements.openHistoryButton.addEventListener("click", openHistoryModal);
   elements.refreshResultsButton.addEventListener("click", refreshResults);
   elements.closeModalButton.addEventListener("click", () => closeModal(elements.resultModal));
   elements.confirmSelectionButton.addEventListener("click", confirmSelection);
   elements.closeHistoryButton.addEventListener("click", () => closeModal(elements.historyModal));
+  elements.closeExportButton.addEventListener("click", () => closeModal(elements.exportModal));
   elements.refreshHistoryButton.addEventListener("click", () => loadHistoryList(true));
   elements.clearChatButton.addEventListener("click", () => openModal(elements.clearConfirmModal));
   elements.cancelClearButton.addEventListener("click", () => closeModal(elements.clearConfirmModal));
@@ -119,7 +135,11 @@ function bindEvents() {
     }
   });
 
-  [elements.resultModal, elements.historyModal, elements.clearConfirmModal].forEach((modal) => {
+  elements.exportFormatButtons.forEach((button) => {
+    button.addEventListener("click", () => exportConversation(button.dataset.exportFormat));
+  });
+
+  [elements.resultModal, elements.historyModal, elements.exportModal, elements.clearConfirmModal].forEach((modal) => {
     modal.addEventListener("click", (event) => {
       if (event.target === modal) {
         closeModal(modal);
@@ -137,6 +157,11 @@ function bindEvents() {
 
   elements.quickActions.forEach((button) => {
     button.addEventListener("click", () => {
+      if (button.dataset.reportAction) {
+        askQuestion(buildReportPrompt(), { exportKind: "report" });
+        return;
+      }
+
       askQuestion(button.dataset.question);
     });
   });
@@ -145,6 +170,12 @@ function bindEvents() {
     const button = event.target.closest("[data-empty-question]");
     if (button) {
       askQuestion(button.dataset.emptyQuestion);
+      return;
+    }
+
+    const exportButton = event.target.closest("[data-export-message-index]");
+    if (exportButton) {
+      openExportModalForMessage(Number(exportButton.dataset.exportMessageIndex));
     }
   });
 
@@ -470,17 +501,19 @@ function getConversationHistoryForApi() {
     .map((message) => ({
       role: message.role,
       content: message.content,
+      display_content: message.display_content || "",
       reasoning: message.reasoning || "",
       created_at: message.created_at || "",
       model: message.model || "",
       is_error: Boolean(message.is_error),
+      export_kind: message.export_kind || "",
     }));
 }
 
 async function saveCurrentHistory() {
   const hasUserMessage = conversationState.messages.some((message) => message.role === "user");
   if (!hasUserMessage) {
-    return;
+    return null;
   }
 
   try {
@@ -503,8 +536,10 @@ async function saveCurrentHistory() {
 
     const data = await response.json();
     conversationState.id = data.id || data.history?.id || conversationState.id;
+    return conversationState.id;
   } catch (error) {
     showToast("历史记录保存失败", "warning");
+    return null;
   }
 }
 
@@ -573,10 +608,12 @@ function normalizeConversationMessages(messages) {
     .map((message) => ({
       role: message.role,
       content: String(message.content),
+      display_content: String(message.display_content || ""),
       reasoning: String(message.reasoning || ""),
       created_at: message.created_at || "",
       model: message.model || "",
       is_error: Boolean(message.is_error),
+      export_kind: message.export_kind || "",
     }));
 }
 
@@ -589,18 +626,18 @@ function renderConversationMessages() {
   elements.messages.classList.remove("empty");
   elements.messages.innerHTML = "";
 
-  conversationState.messages.forEach((message) => {
+  conversationState.messages.forEach((message, index) => {
     if (message.role === "user") {
-      addUserMessage(message.content, message.created_at || "时间待同步");
+      addUserMessage(getMessageDisplayContent(message), message.created_at || "时间待同步");
     }
 
     if (message.role === "assistant") {
-      addAssistantMessage(message);
+      addAssistantMessage(message, index);
     }
   });
 }
 
-async function askQuestion(question) {
+async function askQuestion(question, options = {}) {
   if (isGenerating) {
     showToast("请等待模型回答完成", "warning");
     return;
@@ -618,11 +655,12 @@ async function askQuestion(question) {
   const userMessage = {
     role: "user",
     content: trimmedQuestion,
+    display_content: options.exportKind === "report" ? "【生成报告】" : "",
     created_at: questionTime,
   };
 
   ensureChatStarted();
-  addUserMessage(trimmedQuestion, questionTime);
+  addUserMessage(getMessageDisplayContent(userMessage), questionTime);
   conversationState.messages.push(userMessage);
   elements.questionInput.value = "";
   autoResizeTextarea();
@@ -639,35 +677,48 @@ async function askQuestion(question) {
       });
     });
     const completedAt = formatMessageTime(new Date());
-    replaceLoadingMessage(loadingId, {
-      ...answer,
-      completedAt,
-      isFinal: true,
-    });
-    conversationState.messages.push({
+    const assistantMessage = {
       role: "assistant",
       content: answer.content,
       reasoning: answer.reasoning,
       created_at: completedAt,
       model: currentModel,
+      export_kind: options.exportKind || "",
+    };
+    conversationState.messages.push(assistantMessage);
+    const assistantIndex = conversationState.messages.length - 1;
+    replaceLoadingMessage(loadingId, {
+      ...answer,
+      completedAt,
+      isFinal: true,
+      messageIndex: assistantIndex,
+      exportKind: assistantMessage.export_kind,
     });
     await saveCurrentHistory();
+    if (options.exportKind === "report") {
+      setGeneratingState(false);
+      openExportModalForMessage(assistantIndex);
+    }
   } catch (error) {
     const completedAt = formatMessageTime(new Date());
     const errorContent = error.message || "请检查 Flask 服务是否已启动，以及 DeepSeek API 配置是否可用。";
+    const assistantMessage = {
+      role: "assistant",
+      content: errorContent,
+      reasoning: "后端问答接口调用失败。",
+      created_at: completedAt,
+      model: currentModel,
+      is_error: true,
+    };
+    conversationState.messages.push(assistantMessage);
+    const assistantIndex = conversationState.messages.length - 1;
     replaceLoadingMessage(loadingId, {
       reasoning: "后端问答接口调用失败。",
       content: errorContent,
       completedAt,
       isFinal: true,
       keepReasoningOpen: true,
-    });
-    conversationState.messages.push({
-      role: "assistant",
-      content: errorContent,
-      reasoning: "后端问答接口调用失败。",
-      created_at: completedAt,
-      model: currentModel,
+      messageIndex: assistantIndex,
       is_error: true,
     });
     await saveCurrentHistory();
@@ -875,7 +926,8 @@ function replaceLoadingMessage(id, answer) {
   }
 
   const reasoningOpen = answer.keepReasoningOpen || !answer.isFinal ? "open" : "";
-  const completedAt = answer.completedAt ? `<div class="message-time">${escapeHtml(answer.completedAt)}</div>` : "";
+  const exportButton = answer.isFinal ? buildAssistantExportButton(answer.messageIndex, answer.exportKind, Boolean(answer.is_error)) : "";
+  const completedAt = answer.completedAt ? buildAssistantMessageFooter(answer.completedAt, exportButton) : "";
 
   article.innerHTML = `
     <div class="avatar">AI</div>
@@ -897,11 +949,12 @@ function replaceLoadingMessage(id, answer) {
   scrollToBottom();
 }
 
-function addAssistantMessage(message) {
+function addAssistantMessage(message, messageIndex) {
   const article = document.createElement("article");
   article.className = "message ai-message";
   const model = message.model || currentModel;
-  const completedAt = message.created_at ? `<div class="message-time">${escapeHtml(message.created_at)}</div>` : "";
+  const exportButton = buildAssistantExportButton(messageIndex, message.export_kind, Boolean(message.is_error));
+  const completedAt = message.created_at ? buildAssistantMessageFooter(message.created_at, exportButton) : "";
   const reasoningBlock = message.reasoning
     ? `
       <details class="reasoning-block">
@@ -927,6 +980,27 @@ function addAssistantMessage(message) {
   `;
   elements.messages.appendChild(article);
   scrollToBottom();
+}
+
+function buildAssistantMessageFooter(timeText, exportButton) {
+  return `
+    <div class="message-footer">
+      <div class="message-time-row">
+        <div class="message-time">${escapeHtml(timeText)}</div>
+        ${exportButton}
+      </div>
+      <div class="ai-content-disclaimer"><em>该内容由AI生成，请注意甄别</em></div>
+    </div>
+  `;
+}
+
+function buildAssistantExportButton(messageIndex, exportKind, isError) {
+  if (!Number.isInteger(messageIndex) || isError) {
+    return "";
+  }
+
+  const label = exportKind === "report" ? "导出报告" : "导出本段对话";
+  return `<button class="message-export-button" type="button" data-export-message-index="${messageIndex}">${label}</button>`;
 }
 
 async function clearChat() {
@@ -972,10 +1046,223 @@ async function openHistoryModal() {
   openModal(elements.historyModal);
 }
 
+function openExportModal() {
+  if (isExporting) {
+    showToast("正在导出，请稍候", "warning");
+    return;
+  }
+
+  if (isGenerating) {
+    showToast("请等待模型回答完成", "warning");
+    return;
+  }
+
+  if (!conversationState.messages.some((message) => message.role === "user")) {
+    showToast("当前还没有可导出的对话", "warning");
+    return;
+  }
+
+  exportState.target = {
+    type: "conversation",
+    messageIndex: null,
+    historyId: null,
+  };
+  setExportStatus("");
+  openModal(elements.exportModal);
+}
+
+async function openExportModalForMessage(messageIndex) {
+  if (isGenerating) {
+    showToast("请等待模型回答完成", "warning");
+    return;
+  }
+
+  const message = conversationState.messages[messageIndex];
+  if (!message || message.role !== "assistant") {
+    showToast("无法定位待导出的对话", "warning");
+    return;
+  }
+
+  exportState.target = {
+    type: message.export_kind === "report" ? "report" : "round",
+    messageIndex,
+    historyId: null,
+  };
+  setExportStatus("");
+
+  try {
+    await prepareExportHistory();
+    openModal(elements.exportModal);
+  } catch (error) {
+    showToast("导出记录生成失败", "warning");
+  }
+}
+
 function openResultModal() {
   resultState.draftSelected = new Map(resultState.selected);
   renderResultLists();
   openModal(elements.resultModal);
+}
+
+async function exportConversation(fileFormat) {
+  if (isExporting) {
+    return;
+  }
+
+  setExportingState(true);
+  setExportStatus("");
+  showToast("正在导出...", "warning");
+
+  try {
+    const historyId = await prepareExportHistory();
+    if (!historyId) {
+      throw new Error("history save unavailable");
+    }
+
+    const response = await fetch(`/api/history/${encodeURIComponent(historyId)}/export`, {
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      throw new Error("export api unavailable");
+    }
+
+    const exportResult = await response.json();
+    resetTempExportHistoryAfterUse();
+    const exportedFile = exportResult.files?.[fileFormat];
+    if (!exportedFile?.download_url) {
+      throw new Error("export file unavailable");
+    }
+
+    setExportStatus("导出成功！");
+    showToast("导出成功！");
+    triggerBrowserDownload(exportedFile.download_url, exportedFile.name);
+  } catch (error) {
+    setExportStatus("导出失败，请检查导出程序和后端状态。");
+    showToast("导出失败", "warning");
+  } finally {
+    resetTempExportHistoryAfterUse();
+    setExportingState(false);
+  }
+}
+
+function resetTempExportHistoryAfterUse() {
+  if (exportState.target.type !== "conversation") {
+    exportState.target.historyId = null;
+  }
+}
+
+async function prepareExportHistory() {
+  if (exportState.target.type === "conversation") {
+    return saveCurrentHistory();
+  }
+
+  if (exportState.target.historyId) {
+    return exportState.target.historyId;
+  }
+
+  const history = buildMessageExportHistory(exportState.target.messageIndex, exportState.target.type);
+  if (!history) {
+    return null;
+  }
+
+  const savedHistoryId = await saveExportHistory(history);
+  exportState.target.historyId = savedHistoryId;
+  return savedHistoryId;
+}
+
+function buildMessageExportHistory(messageIndex, exportKind) {
+  const assistantMessage = conversationState.messages[messageIndex];
+  if (!assistantMessage || assistantMessage.role !== "assistant") {
+    return null;
+  }
+
+  const userIndex = findPreviousUserMessageIndex(messageIndex);
+  if (userIndex < 0) {
+    return null;
+  }
+
+  const userMessage = conversationState.messages[userIndex];
+  const now = formatBackendTime(new Date());
+  const idPrefix = exportKind === "report" ? "report" : "round";
+  return {
+    id: `${idPrefix}_${createExportTimestamp()}`,
+    export_kind: exportKind,
+    created_at: userMessage.created_at || now,
+    updated_at: now,
+    model: assistantMessage.model || currentModel,
+    selected_results: Array.from(resultState.selected.values()),
+    messages: [
+      normalizeMessageForExport(userMessage),
+      normalizeMessageForExport(assistantMessage),
+    ],
+  };
+}
+
+function findPreviousUserMessageIndex(messageIndex) {
+  for (let index = messageIndex - 1; index >= 0; index -= 1) {
+    if (conversationState.messages[index]?.role === "user") {
+      return index;
+    }
+  }
+
+  return -1;
+}
+
+function normalizeMessageForExport(message) {
+  return {
+    role: message.role,
+    content: message.content,
+    display_content: message.display_content || "",
+    reasoning: message.reasoning || "",
+    created_at: message.created_at || "",
+    model: message.model || "",
+    is_error: Boolean(message.is_error),
+    export_kind: message.export_kind || "",
+  };
+}
+
+function getMessageDisplayContent(message) {
+  return message.display_content || message.content || "";
+}
+
+async function saveExportHistory(history) {
+  const response = await fetch("/api/history/save", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(history),
+  });
+
+  if (!response.ok) {
+    throw new Error("history save unavailable");
+  }
+
+  const data = await response.json();
+  return data.id || data.history?.id || history.id;
+}
+
+function setExportingState(exporting) {
+  isExporting = exporting;
+  elements.openExportButton.setAttribute("aria-disabled", String(exporting));
+  elements.exportFormatButtons.forEach((button) => {
+    button.disabled = exporting;
+  });
+}
+
+function setExportStatus(text) {
+  elements.exportStatus.textContent = text;
+}
+
+function triggerBrowserDownload(url, fileName) {
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName || "";
+  link.style.display = "none";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 }
 
 async function loadHistoryList(showSuccessToast = false) {
@@ -1269,6 +1556,43 @@ function formatMessageTime(date) {
   const minutes = String(date.getMinutes()).padStart(2, "0");
   const seconds = String(date.getSeconds()).padStart(2, "0");
   return `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`;
+}
+
+function formatBackendTime(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+function createExportTimestamp() {
+  const now = new Date();
+  const milliseconds = String(now.getMilliseconds()).padStart(3, "0");
+  return `${formatBackendTime(now).replace(/[-: ]/g, "")}_${milliseconds}`;
+}
+
+function buildReportPrompt() {
+  const selectedFiles = Array.from(resultState.selected.values());
+  const fileNames = selectedFiles.length
+    ? selectedFiles.map((file, index) => `${index + 1}. ${file.name || file.path || "未命名文件"}`).join("\n")
+    : "当前未选择分析文件";
+
+  return `请根据当前选择的分析文件生成一份较为正式、结构完整、可直接导出的电商数据分析报告。
+
+报告要求：
+1. 使用正式的 Markdown 格式输出，标题、摘要、关键发现、数据解读、业务建议、风险与后续动作等结构清晰。
+2. 报告正文必须明确提到本次分析使用的文件名。
+3. 内容应面向业务使用者，结论、推断和建议需要区分清楚。
+4. 这份 Markdown 将直接提供给用户导出，请不要输出闲聊式开场白，不要说明“下面是报告”，直接从报告标题开始。
+5. 不要在末尾添加模型声明或生成时间，系统会在导出时自动补充。
+6. 如果文件上下文标注为“已完整提供，未截断”，不要声称存在“部分数据未展示”“仅提供部分明细”等限制；对于推荐类 JSON，要按上下文里的结构摘要区分顶层群组数和群组内商品推荐明细数。
+7. 如需展示结构化结果，必须使用标准 Markdown 表格：表格前后各留一个空行；第二行必须是“| --- | --- |”这类分隔行；不要把表格放进代码块、引用块或列表项里；每一行都必须以“|”开头和结尾。
+
+本次分析文件：
+${fileNames}`;
 }
 
 function escapeHtml(value) {

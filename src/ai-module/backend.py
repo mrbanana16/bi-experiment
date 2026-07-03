@@ -1,3 +1,4 @@
+# TODO 将后端用pyinstaller打包成exe
 # https://zhuanlan.zhihu.com/p/79634564
 import json
 import csv
@@ -6,8 +7,10 @@ from pathlib import Path
 import re
 
 import httpx
-from flask import Flask, Response, jsonify, request, stream_with_context
+from flask import Flask, Response, jsonify, request, send_file, stream_with_context
 from openai import OpenAI
+
+from output import export_full_history
 
 app = Flask(__name__, static_folder=".", static_url_path="")
 
@@ -22,20 +25,28 @@ DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 AVAILABLE_MODELS = {"deepseek-v4-pro", "deepseek-v4-flash"}
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RESULT_ROOT = PROJECT_ROOT / "result"
-HISTORY_ROOT = RESULT_ROOT / "ai-history"
+AI_ROOT = RESULT_ROOT / "ai"
+HISTORY_ROOT = AI_ROOT / "ai-history"
 RESULT_CATEGORIES = {
     "reports": RESULT_ROOT / "reports",
     "models": RESULT_ROOT / "models",
+}
+REPORT_ROOT = AI_ROOT / "ai-output"
+EXPORT_FORMATS = {
+    "markdown": {"extension": "md", "mime_type": "text/markdown"},
+    "md": {"extension": "md", "mime_type": "text/markdown"},
+    "docx": {"extension": "docx", "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"},
+    "pdf": {"extension": "pdf", "mime_type": "application/pdf"},
 }
 ANALYZABLE_FILE_EXTENSIONS = {".csv", ".md", ".json"}
 TEXT_EXTENSIONS = {".md"}
 JSON_EXTENSIONS = {".json"}
 TABLE_EXTENSIONS = {".csv"}
-MAX_CONTEXT_CHARS = 60000
-MAX_TEXT_FILE_CHARS = 12000
-MAX_TABLE_ROWS = 30
+MAX_CONTEXT_CHARS = 200000
+MAX_TEXT_FILE_CHARS = 50000
+MAX_TABLE_ROWS = 200
 MAX_HISTORY_MESSAGES = 20
-MAX_HISTORY_MESSAGE_CHARS = 8000
+MAX_HISTORY_MESSAGE_CHARS = 30000
 
 SYSTEM_PROMPT = """
 你是“电商数据智能分析助手”，一名熟悉电商用户行为、商品销售、用户分群、关联规则、转化漏斗和运营策略的数据分析专家。
@@ -46,7 +57,8 @@ SYSTEM_PROMPT = """
 3. 区分事实、推断和建议，不要编造文件中不存在的指标、字段或数值。
 4. 回答应面向电商业务使用者，尽量给出可执行的运营建议、分析结论和下一步动作。
 5. 使用中文回答，输出 Markdown 格式，结构清晰，必要时使用列表、表格和小标题。
-6. 模型结果只支持 CSV 表格上下文；如果用户问题依赖未提供或不可解析的模型文件内容，需说明当前文件信息不足。
+6. 如果需要输出表格，必须使用标准 Markdown 表格：表格前后各保留一个空行；表头下一行必须是分隔行，例如 `| --- | --- |`；不要把表格放进代码块、引用块或列表项里；不要省略每行首尾的 `|`。
+7. 如果用户问题依赖未提供或不可解析的文件内容，需说明当前文件信息不足。
 """.strip()
 
 client = OpenAI(
@@ -55,22 +67,22 @@ client = OpenAI(
     http_client=httpx.Client(trust_env=False, timeout=20),
 )
 
-
+# 前端访问定向接口，跳转到欢迎页
 @app.get("/")
 def index():
     return app.send_static_file("welcome.html")
 
-
+# 获取文件列表接口
 @app.get("/api/results")
 def results():
     return jsonify({"results": list_result_files()})
 
-
+# 获取对话历史列表接口
 @app.get("/api/history")
 def history_list():
     return jsonify({"history": list_history_records()})
 
-
+# 获取指定历史对话记录
 @app.get("/api/history/<history_id>")
 def history_detail(history_id):
     history_file = resolve_history_file(history_id)
@@ -85,7 +97,7 @@ def history_detail(history_id):
 
     return jsonify({"history": history})
 
-
+# 清空历史对话
 @app.delete("/api/history/<history_id>")
 def history_delete(history_id):
     history_file = resolve_history_file(history_id)
@@ -100,7 +112,7 @@ def history_delete(history_id):
 
     return jsonify({"deleted": True, "id": sanitize_history_id(history_id)})
 
-
+# 保存历史对话
 @app.post("/api/history/save")
 def history_save():
     payload = request.get_json(silent=True) or {}
@@ -111,7 +123,49 @@ def history_save():
         "summary": summarize_history_record(history),
     })
 
+# 导出当前对话
+@app.post("/api/history/<history_id>/export")
+def history_export(history_id):
+    history_file = resolve_history_file(history_id)
+    sanitized_id = sanitize_history_id(history_id)
 
+    if not history_file or not history_file.exists():
+        return jsonify({"error": "history not found"}), 404
+
+    try:
+        paths = export_full_history(history_file, REPORT_ROOT, build_export_base_name(sanitized_id))
+    except Exception as error:
+        return jsonify({"error": str(error)}), 500
+    finally:
+        delete_temp_history_file(sanitized_id)
+
+    return jsonify({
+        "id": sanitized_id,
+        "files": build_export_file_payload(sanitized_id, paths),
+    })
+
+# 下载导出的对话文件
+@app.get("/api/history/<history_id>/export/<file_format>")
+def history_export_download(history_id, file_format):
+    export_format = EXPORT_FORMATS.get(str(file_format).lower())
+    sanitized_id = sanitize_history_id(history_id)
+
+    if not sanitized_id or not export_format:
+        return jsonify({"error": "export file not found"}), 404
+
+    file_path = REPORT_ROOT / f"{build_export_base_name(sanitized_id)}.{export_format['extension']}"
+
+    if not file_path.exists() or not file_path.is_file():
+        return jsonify({"error": "export file not found"}), 404
+
+    return send_file(
+        file_path,
+        mimetype=export_format["mime_type"],
+        as_attachment=True,
+        download_name=file_path.name,
+    )
+
+# 测试api接口状态
 @app.post("/api/model-status")
 def model_status():
     payload = request.get_json(silent=True) or {}
@@ -201,7 +255,7 @@ def list_history_records():
     records = []
 
     for history_file in sorted(HISTORY_ROOT.glob("*.json"), key=lambda path: path.stat().st_mtime, reverse=True):
-        if history_file.name.startswith("."):
+        if history_file.name.startswith(".") or is_temp_history_id(history_file.stem):
             continue
 
         try:
@@ -226,6 +280,7 @@ def read_history_file(history_file):
     data["file_name"] = history_file.name
     data["selected_results"] = normalize_selected_results(data.get("selected_results"))
     data["messages"] = normalize_history_messages(data.get("messages"))
+    data["export_kind"] = normalize_export_kind(data.get("export_kind"))
     data["created_at"] = data.get("created_at") or format_file_time(history_file.stat())
     data["updated_at"] = data.get("updated_at") or format_file_time(history_file.stat())
     return data
@@ -233,10 +288,13 @@ def read_history_file(history_file):
 
 def summarize_history_record(history):
     selected_results = normalize_selected_results(history.get("selected_results"))
+    messages = normalize_history_messages(history.get("messages"))
     first_question = next(
-        (message.get("content", "") for message in normalize_history_messages(history.get("messages")) if message.get("role") == "user"),
+        (message.get("content", "") for message in messages if message.get("role") == "user"),
         "未命名历史对话",
     )
+    if is_report_history(history, messages):
+        first_question = "【生成报告】"
     selected_files = [
         {
             "type": file.get("type") or file.get("category") or "unknown",
@@ -254,8 +312,61 @@ def summarize_history_record(history):
         "selected_files": selected_files,
         "created_at": history.get("created_at") or "",
         "updated_at": history.get("updated_at") or "",
-        "message_count": len(normalize_history_messages(history.get("messages"))),
+        "message_count": len(messages),
     }
+
+
+def is_report_history(history, messages):
+    if history.get("export_kind") == "report":
+        return True
+
+    if any(message.get("export_kind") == "report" for message in messages):
+        return True
+
+    first_user_message = next((message.get("content", "") for message in messages if message.get("role") == "user"), "")
+    return "生成一份较为正式" in first_user_message and "电商数据分析报告" in first_user_message
+
+
+def build_export_base_name(history_id):
+    sanitized_id = sanitize_history_id(history_id)
+    if sanitized_id.startswith("round_"):
+        return f"{sanitized_id}_round"
+    if sanitized_id.startswith("report_"):
+        return f"{sanitized_id}_report"
+    return f"{sanitized_id}_conversation"
+
+
+def is_temp_history_id(history_id):
+    sanitized_id = sanitize_history_id(history_id)
+    return sanitized_id.startswith("round_") or sanitized_id.startswith("report_")
+
+
+def delete_temp_history_file(history_id):
+    if not is_temp_history_id(history_id):
+        return
+
+    history_file = resolve_history_file(history_id)
+    if not history_file or not history_file.exists():
+        return
+
+    try:
+        history_file.unlink()
+    except OSError:
+        pass
+
+
+def build_export_file_payload(history_id, paths):
+    files = {}
+
+    for file_type, file_path in paths.items():
+        normalized_type = "markdown" if file_type == "md" else file_type
+        files[normalized_type] = {
+            "name": Path(file_path).name,
+            "path": Path(file_path).relative_to(PROJECT_ROOT).as_posix(),
+            "download_url": f"/api/history/{history_id}/export/{normalized_type}",
+        }
+
+    return files
 
 
 def save_history_record(payload):
@@ -276,6 +387,7 @@ def save_history_record(payload):
         "created_at": existing.get("created_at") or payload.get("created_at") or now,
         "updated_at": now,
         "model": payload.get("model") or existing.get("model") or "deepseek-v4-pro",
+        "export_kind": normalize_export_kind(payload.get("export_kind") or existing.get("export_kind")),
         "selected_results": normalize_selected_results(payload.get("selected_results") or existing.get("selected_results")),
         "messages": normalize_history_messages(messages),
     }
@@ -307,6 +419,12 @@ def sanitize_history_id(history_id):
 
 def create_history_id():
     return f"history_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}"
+
+
+def normalize_export_kind(export_kind):
+    if export_kind in {"conversation", "round", "report"}:
+        return export_kind
+    return "conversation"
 
 
 def current_time_text():
@@ -354,10 +472,12 @@ def normalize_history_messages(messages):
         normalized.append({
             "role": role,
             "content": content,
+            "display_content": str(message.get("display_content") or "")[:MAX_HISTORY_MESSAGE_CHARS],
             "reasoning": str(message.get("reasoning") or "")[:MAX_HISTORY_MESSAGE_CHARS],
             "created_at": message.get("created_at") or "",
             "model": message.get("model") or "",
             "is_error": bool(message.get("is_error")),
+            "export_kind": normalize_export_kind(message.get("export_kind")) if message.get("export_kind") else "",
         })
 
     return normalized
@@ -525,16 +645,69 @@ def read_text_context(file_path):
 def read_json_context(file_path):
     try:
         with file_path.open("r", encoding="utf-8", errors="replace") as file:
-            content = json.dumps(json.load(file), ensure_ascii=False, indent=2)
+            data = json.load(file)
+            content = json.dumps(data, ensure_ascii=False, indent=2)
         label = "JSON 结构内容"
+        structure_summary = build_json_structure_summary(data)
     except json.JSONDecodeError:
         content = file_path.read_text(encoding="utf-8", errors="replace")
         label = "JSON 文件内容（未通过 JSON 解析，按文本传入）"
+        structure_summary = ""
 
     truncated = len(content) > MAX_TEXT_FILE_CHARS
     content = content[:MAX_TEXT_FILE_CHARS]
     suffix = "\n[该 JSON 文件内容因长度限制已截断。]" if truncated else ""
-    return f"{label}：\n```json\n{content}\n```{suffix}"
+    completeness_note = "完整性说明：以下 JSON 内容已完整提供，未截断。请不要将数组长度或聚类分组数误判为上下文抽样。"
+    if truncated:
+        completeness_note = "完整性说明：以下 JSON 内容因长度限制已截断，请仅基于已提供内容分析。"
+
+    summary = f"{completeness_note}\n{structure_summary}\n\n" if structure_summary else f"{completeness_note}\n\n"
+    return f"{summary}{label}：\n```json\n{content}\n```{suffix}"
+
+
+def build_json_structure_summary(data):
+    if not isinstance(data, dict):
+        return ""
+
+    lines = ["JSON 结构摘要："]
+    meta = data.get("meta")
+    if isinstance(meta, dict):
+        total_recommendations = meta.get("total_recommendations")
+        if total_recommendations is not None:
+            lines.append(f"- meta.total_recommendations：{total_recommendations}")
+
+    for key, value in data.items():
+        if isinstance(value, list):
+            lines.append(f"- {key}：完整提供 {len(value)} 项")
+
+    recommendation_summary = build_recommendations_json_summary(data)
+    if recommendation_summary:
+        lines.extend(recommendation_summary)
+
+    return "\n".join(lines)
+
+
+def build_recommendations_json_summary(data):
+    required_keys = {"hot_recommendations", "association_recommendations", "cluster_recommendations"}
+    if not required_keys.issubset(data.keys()):
+        return []
+
+    hot_count = len(data.get("hot_recommendations") or [])
+    association_count = len(data.get("association_recommendations") or [])
+    cluster_groups = data.get("cluster_recommendations") or []
+    cluster_product_count = sum(
+        len(group.get("hot_products_in_category") or [])
+        for group in cluster_groups
+        if isinstance(group, dict)
+    )
+    calculated_total = hot_count + association_count + cluster_product_count
+    return [
+        "- 推荐明细口径：hot_recommendations "
+        f"{hot_count} 条 + association_recommendations {association_count} 条 + "
+        f"cluster_recommendations {len(cluster_groups)} 个群组内 hot_products_in_category "
+        f"合计 {cluster_product_count} 条商品推荐 = {calculated_total} 条。",
+        "- 说明：cluster_recommendations 的顶层长度是群组数，不是聚类推荐商品明细总数。",
+    ]
 
 
 def read_table_context(file_path):
@@ -563,7 +736,7 @@ def read_table_context(file_path):
     return f"表格结构与样例数据：\n```json\n{json.dumps(table_payload, ensure_ascii=False, indent=2)}\n```"
 
 
-# 接口1 deepseek api调用接口 /api/chat
+# deepseek api调用接口 /api/chat
 @app.post("/api/chat")
 def chat():
     payload = request.get_json(silent=True) or {}

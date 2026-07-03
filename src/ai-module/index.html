@@ -21,6 +21,12 @@
         </div>
 
         <div class="header-actions">
+          <button class="secondary-button" type="button" id="openExportButton">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M11 3h2v9.2l3.1-3.1 1.4 1.4L12 16l-5.5-5.5 1.4-1.4 3.1 3.1V3Zm-6 14h2v2h10v-2h2v4H5v-4Z"></path>
+            </svg>
+            <span>导出对话</span>
+          </button>
           <button class="secondary-button" type="button" id="openHistoryButton">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M13 3a9 9 0 1 1-8.5 6H2l3.8-4L9.6 9H6.7A7 7 0 1 0 13 5v4l3.2 2.1-1.1 1.7L11 10V3h2Z"></path>
@@ -66,6 +72,12 @@
               </svg>
               <span>关联规则</span>
             </button>
+            <button type="button" data-report-action="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 3h10l4 4v14H5V3Zm2 2v14h10V8h-3V5H7Zm2 6h6v2H9v-2Zm0 4h6v2H9v-2Z"></path>
+              </svg>
+              <span>生成报告</span>
+            </button>
           </div>
         </div>
         <div class="model-picker" id="modelPicker">
@@ -103,6 +115,40 @@
         </form>
       </footer>
     </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="exportModal" role="dialog" aria-modal="true" aria-labelledby="exportModalTitle">
+    <div class="modal export-modal">
+      <div class="modal-header">
+        <div>
+          <h2 id="exportModalTitle">导出当前对话</h2>
+        </div>
+        <button class="icon-button" type="button" id="closeExportButton" aria-label="关闭">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4 6.4 5Z"></path>
+          </svg>
+        </button>
+      </div>
+      <p class="modal-desc">请选择导出格式</p>
+      <div class="export-format-grid" aria-label="导出格式">
+        <button class="export-format-button" type="button" data-export-format="markdown">
+          <span class="export-format-name">Markdown</span>
+          <code>.md</code>
+        </button>
+        <button class="export-format-button" type="button" data-export-format="docx">
+          <span class="export-format-name">Word 文档</span>
+          <code>.docx</code>
+        </button>
+        <button class="export-format-button" type="button" data-export-format="pdf">
+          <span class="export-format-name">PDF</span>
+          <code>.pdf</code>
+        </button>
+      </div>
+      <p class="export-dependency-hint">如需导出 Word 和 PDF 文件，请确保本机已安装 Microsoft Word。</p>
+      <div class="modal-footer">
+        <span id="exportStatus"></span>
+      </div>
+    </div>
   </div>
 
   <div class="modal-backdrop hidden" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">

@@ -81,6 +81,11 @@ svg {
   line-height: 1.8;
 }
 
+.welcome-copy .ai-disclaimer {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
 .selector-card {
   display: grid;
   grid-template-rows: auto auto auto minmax(0, 1fr) auto;
@@ -325,7 +330,11 @@ svg {
 }
 
 .history-title {
+  display: -webkit-box;
+  overflow: hidden;
   overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   font-size: 16px;
   font-weight: 800;
   line-height: 1.45;
