@@ -18,8 +18,8 @@ plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'Arial Unicode M
 plt.rcParams['axes.unicode_minus'] = False
 
 # 创建输出目录
-os.makedirs('result/figures', exist_ok=True)
-os.makedirs('result/models', exist_ok=True)
+os.makedirs('../result/figures', exist_ok=True)
+os.makedirs('../result/models', exist_ok=True)
 
 # ==================== 1. 数据适配：生成事务表 ====================
 print("=" * 50)
@@ -27,7 +27,7 @@ print("1. 数据适配：生成事务表（用户级共购）")
 print("=" * 50)
 
 # 读取预处理数据
-df = pd.read_csv("Datasets/processed/preprocessed.csv")
+df = pd.read_csv("../Datasets/processed/preprocessed.csv")
 print(f"预处理数据形状: {df.shape}")
 print(f"列名: {df.columns.tolist()}")
 
@@ -62,12 +62,12 @@ transactions_l1 = transactions_l1_all[transactions_l1_all['items'].apply(len) > 
 print(f"跨品类用户（事务数）: {len(transactions_l1):,}（{len(transactions_l1)/total_purchasing_users*100:.1f}%）")
 
 # 保存事务表（细粒度）
-transactions_path = 'Datasets/processed/transactions_for_apriori.csv'
+transactions_path = '../Datasets/processed/transactions_for_apriori.csv'
 transactions.to_csv(transactions_path, index=False)
 print(f"\n[OK] 细粒度事务表已保存: {transactions_path}")
 
 # 保存事务表（粗粒度）
-transactions_l1_path = 'Datasets/processed/transactions_l1_for_apriori.csv'
+transactions_l1_path = '../Datasets/processed/transactions_l1_for_apriori.csv'
 transactions_l1.to_csv(transactions_l1_path, index=False)
 print(f"[OK] 粗粒度事务表已保存: {transactions_l1_path}")
 
@@ -143,13 +143,13 @@ frequent_itemsets, rules_deduped = run_apriori_pipeline(
 
 # 保存细粒度结果
 if len(frequent_itemsets) > 0:
-    frequent_itemsets.to_csv('result/models/frequent_itemsets.csv', index=False)
+    frequent_itemsets.to_csv('../result/models/frequent_itemsets.csv', index=False)
     print(f"[OK] 频繁项集已保存: result/models/frequent_itemsets.csv")
 if len(rules_deduped) > 0:
-    rules_deduped.to_csv('result/models/association_rules.csv', index=False)
+    rules_deduped.to_csv('../result/models/association_rules.csv', index=False)
     print(f"[OK] 关联规则已保存: result/models/association_rules.csv")
 else:
-    rules_path = 'result/models/association_rules.csv'
+    rules_path = '../result/models/association_rules.csv'
     if os.path.exists(rules_path):
         os.remove(rules_path)
         print(f"[INFO] 细粒度无规则，已删除旧文件: {rules_path}")
@@ -167,14 +167,14 @@ if len(frequent_itemsets_l1) > 0:
             frequent_itemsets_l1['itemsets'] = frequent_itemsets_l1['itemsets'].apply(
                 lambda x: ', '.join(sorted(list(x))) if isinstance(x, frozenset) else str(x)
             )
-    frequent_itemsets_l1.to_csv('result/models/frequent_itemsets_l1.csv', index=False)
+    frequent_itemsets_l1.to_csv('../result/models/frequent_itemsets_l1.csv', index=False)
     print(f"[OK] 粗粒度频繁项集已保存: result/models/frequent_itemsets_l1.csv")
 if len(rules_l1_deduped) > 0:
-    rules_l1_deduped.to_csv('result/models/association_rules_l1.csv', index=False)
+    rules_l1_deduped.to_csv('../result/models/association_rules_l1.csv', index=False)
     print(f"[OK] 粗粒度关联规则已保存: result/models/association_rules_l1.csv")
 else:
     # 无规则时删除旧文件，避免下游读到过期数据
-    l1_rules_path = 'result/models/association_rules_l1.csv'
+    l1_rules_path = '../result/models/association_rules_l1.csv'
     if os.path.exists(l1_rules_path):
         os.remove(l1_rules_path)
         print(f"[INFO] 粗粒度无规则，已删除旧文件: {l1_rules_path}")
@@ -194,7 +194,7 @@ if len(rules_deduped) > 0:
     ax.set_ylabel('Confidence')
     plt.colorbar(scatter, label='Lift')
     plt.tight_layout()
-    plt.savefig('result/figures/association_scatter.png', dpi=150, bbox_inches='tight')
+    plt.savefig('../result/figures/association_scatter.png', dpi=150, bbox_inches='tight')
     plt.close()
     print("[OK] association_scatter.png saved")
 
@@ -222,7 +222,7 @@ if len(rules_deduped) > 0:
     ax.set_title(f'Association Rules Network (Top {top_n})', fontsize=14, fontweight='bold')
     ax.axis('off')
     plt.tight_layout()
-    plt.savefig('result/figures/association_network.png', dpi=150, bbox_inches='tight')
+    plt.savefig('../result/figures/association_network.png', dpi=150, bbox_inches='tight')
     plt.close()
     print("[OK] association_network.png saved")
 
@@ -250,7 +250,7 @@ if len(rules_deduped) > 0:
     axes[2].invert_yaxis()
 
     plt.tight_layout()
-    plt.savefig('result/figures/association_top10.png', dpi=150, bbox_inches='tight')
+    plt.savefig('../result/figures/association_top10.png', dpi=150, bbox_inches='tight')
     plt.close()
     print("[OK] association_top10.png saved")
 else:
@@ -286,7 +286,7 @@ if len(rules_l1_deduped) > 0:
     axes[2].invert_yaxis()
 
     plt.tight_layout()
-    plt.savefig('result/figures/association_top10_l1.png', dpi=150, bbox_inches='tight')
+    plt.savefig('../result/figures/association_top10_l1.png', dpi=150, bbox_inches='tight')
     plt.close()
     print("[OK] association_top10_l1.png saved")
 else:

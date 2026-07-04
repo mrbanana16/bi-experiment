@@ -26,15 +26,15 @@ plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'Arial Unicode M
 plt.rcParams['axes.unicode_minus'] = False
 
 # 创建输出目录
-os.makedirs('result/figures', exist_ok=True)
-os.makedirs('result/models', exist_ok=True)
+os.makedirs('../result/figures', exist_ok=True)
+os.makedirs('../result/models', exist_ok=True)
 
 # ==================== 1. 读取数据 ====================
 print("=" * 50)
 print("1. 读取数据")
 print("=" * 50)
 
-df = pd.read_csv("Datasets/processed/session_based_features.csv")
+df = pd.read_csv("../Datasets/processed/session_based_features.csv")
 print(f"数据形状: {df.shape}")
 print(f"列名: {df.columns.tolist()}")
 print(f"\n数据类型:\n{df.dtypes}")
@@ -155,7 +155,7 @@ axes[1].legend()
 axes[1].set_xticks(list(K_range))
 
 plt.tight_layout()
-plt.savefig('result/figures/elbow_silhouette.png', dpi=150, bbox_inches='tight')
+plt.savefig('../result/figures/elbow_silhouette.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("[OK] elbow_silhouette.png saved")
 
@@ -254,7 +254,7 @@ print("\n" + "=" * 50)
 print("6. 保存聚类模型")
 print("=" * 50)
 
-model_path = 'result/models/kmeans_model.pkl'
+model_path = '../result/models/kmeans_model.pkl'
 with open(model_path, 'wb') as f:
     pickle.dump({
         'model': kmeans,
@@ -298,7 +298,7 @@ df_all['log_purchase_amount'] = np.log1p(df_all['purchase_amount'])
 cluster_profiles_training = df_all.groupby('cluster')[feature_cols].mean()
 print(f"\n训练特征画像（聚类中心）:\n{cluster_profiles_training.round(4)}")
 
-cluster_profiles_path = 'result/models/cluster_profiles.csv'
+cluster_profiles_path = '../result/models/cluster_profiles.csv'
 cluster_profiles_training.to_csv(cluster_profiles_path)
 print(f"\n[OK] 训练特征画像已保存: {cluster_profiles_path}")
 
@@ -306,7 +306,7 @@ print(f"\n[OK] 训练特征画像已保存: {cluster_profiles_path}")
 cluster_profiles_business = df_all.groupby('cluster')[business_display_cols].mean()
 print(f"\n业务展示特征画像:\n{cluster_profiles_business.round(2)}")
 
-cluster_profiles_business_path = 'result/models/cluster_profiles_business.csv'
+cluster_profiles_business_path = '../result/models/cluster_profiles_business.csv'
 cluster_profiles_business.to_csv(cluster_profiles_business_path)
 print(f"\n[OK] 业务展示特征画像已保存: {cluster_profiles_business_path}")
 
@@ -325,7 +325,7 @@ print("7.5 各聚类偏好品类分布")
 print("=" * 50)
 
 # 读取预处理数据获取品类信息
-df_preprocessed = pd.read_csv("Datasets/processed/preprocessed.csv")
+df_preprocessed = pd.read_csv("../Datasets/processed/preprocessed.csv")
 df_preprocessed = df_preprocessed[df_preprocessed['category_code'].notna() & (df_preprocessed['category_code'] != '')]
 
 # 将 cluster 标签映射回会话
@@ -360,7 +360,7 @@ for cid in range(total_clusters):
         })
 
 cluster_category_df = pd.DataFrame(cluster_category_list)
-cluster_category_path = 'result/models/cluster_category_preferences.csv'
+cluster_category_path = '../result/models/cluster_category_preferences.csv'
 cluster_category_df.to_csv(cluster_category_path, index=False)
 print(f"[OK] 各聚类偏好品类已保存: {cluster_category_path}")
 
@@ -417,7 +417,7 @@ ax.set_title('Cluster Radar Chart (All Users, Normalized)', fontsize=14, fontwei
 ax.set_ylim(0, 1.1)
 ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1.0))
 plt.tight_layout()
-plt.savefig('result/figures/cluster_radar.png', dpi=150, bbox_inches='tight')
+plt.savefig('../result/figures/cluster_radar.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("[OK] cluster_radar.png saved")
 
@@ -436,7 +436,7 @@ ax.set_xlabel(f'PC1 ({pca.explained_variance_ratio_[0]*100:.2f}%)')
 ax.set_ylabel(f'PC2 ({pca.explained_variance_ratio_[1]*100:.2f}%)')
 plt.colorbar(scatter, label='Cluster')
 plt.tight_layout()
-plt.savefig('result/figures/cluster_pca.png', dpi=150, bbox_inches='tight')
+plt.savefig('../result/figures/cluster_pca.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("[OK] cluster_pca.png saved")
 
@@ -459,7 +459,7 @@ for i, col in enumerate(feature_cols):
         axes[i].text(x, nv + 0.03, f'{rv:.2f}', ha='center', va='bottom', fontsize=7)
 
 plt.tight_layout()
-plt.savefig('result/figures/cluster_comparison.png', dpi=150, bbox_inches='tight')
+plt.savefig('../result/figures/cluster_comparison.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("[OK] cluster_comparison.png saved")
 

@@ -491,7 +491,7 @@ def main():
 
     print(f"\n{'=' * 60}")
     print("✅ 第四步可视化完成！")
-    print(f"   Dashboard: {PROJECT_ROOT / 'result' / 'dashboard.html'}")
+    print(f"   Dashboard: {PROJECT_ROOT / '../result' / 'dashboard.html'}")
     print(f"   图表目录: {RESULT_FIGURES}")
     print(f"{'=' * 60}")
 

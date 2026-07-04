@@ -13,7 +13,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # 创建输出目录
-os.makedirs('result/reports', exist_ok=True)
+os.makedirs('../result/reports', exist_ok=True)
 
 
 def round_pct_sum_100(counts, total):
@@ -53,35 +53,35 @@ print("=" * 50)
 print("1. 读取分析结果")
 print("=" * 50)
 
-df = pd.read_csv('Datasets/processed/preprocessed.csv')
+df = pd.read_csv('../Datasets/processed/preprocessed.csv')
 print(f"预处理数据形状: {df.shape}")
 
 date_min = str(pd.to_datetime(df['event_time']).min().date())
 date_max = str(pd.to_datetime(df['event_time']).max().date())
 date_range_str = f"{date_min} ~ {date_max}"
 
-cluster_profiles = pd.read_csv('result/models/cluster_profiles.csv', index_col=0)
+cluster_profiles = pd.read_csv('../result/models/cluster_profiles.csv', index_col=0)
 print(f"聚类画像（训练特征）形状: {cluster_profiles.shape}")
 print(f"聚类画像列名: {cluster_profiles.columns.tolist()}")
 
-cluster_profiles_business = pd.read_csv('result/models/cluster_profiles_business.csv', index_col=0)
+cluster_profiles_business = pd.read_csv('../result/models/cluster_profiles_business.csv', index_col=0)
 print(f"聚类画像（业务特征）形状: {cluster_profiles_business.shape}")
 
-association_rules = pd.read_csv('result/models/association_rules.csv')
+association_rules = pd.read_csv('../result/models/association_rules.csv')
 print(f"细粒度关联规则数量: {len(association_rules)}")
 
-frequent_itemsets = pd.read_csv('result/models/frequent_itemsets.csv')
+frequent_itemsets = pd.read_csv('../result/models/frequent_itemsets.csv')
 print(f"频繁项集数量: {len(frequent_itemsets)}")
 
-hot_products = pd.read_csv('result/models/hot_products.csv')
+hot_products = pd.read_csv('../result/models/hot_products.csv')
 print(f"热门商品数量: {len(hot_products)}")
 
-cluster_category_prefs = pd.read_csv('result/models/cluster_category_preferences.csv')
+cluster_category_prefs = pd.read_csv('../result/models/cluster_category_preferences.csv')
 print(f"聚类品类偏好条目数: {len(cluster_category_prefs)}")
 
-has_l1_rules = os.path.exists('result/models/association_rules_l1.csv')
+has_l1_rules = os.path.exists('../result/models/association_rules_l1.csv')
 if has_l1_rules:
-    association_rules_l1 = pd.read_csv('result/models/association_rules_l1.csv')
+    association_rules_l1 = pd.read_csv('../result/models/association_rules_l1.csv')
     print(f"粗粒度关联规则数量: {len(association_rules_l1)}")
 else:
     association_rules_l1 = pd.DataFrame()
@@ -151,13 +151,13 @@ total_events_raw = len(df)
 total_sessions = df['user_session'].nunique()
 total_categories = df_with_category['category_code'].nunique()
 
-trans_df = pd.read_csv('Datasets/processed/transactions_for_apriori.csv')
+trans_df = pd.read_csv('../Datasets/processed/transactions_for_apriori.csv')
 trans_count = len(trans_df)
 # 跨品类用户占比（相对于全部购买用户）
 multi_cat_count = trans_count  # CSV 中已过滤为 2+ 品类用户
 rule_cross_pct = round(multi_cat_count / purchasing_users * 100, 1) if purchasing_users > 0 else 0
 
-l1_transactions_path = 'Datasets/processed/transactions_l1_for_apriori.csv'
+l1_transactions_path = '../Datasets/processed/transactions_l1_for_apriori.csv'
 if os.path.exists(l1_transactions_path):
     trans_l1_df = pd.read_csv(l1_transactions_path)
     trans_l1_count = len(trans_l1_df)
@@ -171,7 +171,7 @@ else:
     l1_rule_cross_pct = round(trans_l1_count / purchasing_users * 100, 1) if purchasing_users > 0 else 0
 
 # 加载聚类模型
-with open('result/models/kmeans_model.pkl', 'rb') as _f:
+with open('../result/models/kmeans_model.pkl', 'rb') as _f:
     _model_data = pickle.load(_f)
 max_sil = _model_data['metadata'].get('silhouette_score_pre_merge', 0)
 sil_post_merge = _model_data['metadata'].get('silhouette_score_post_merge', max_sil)
@@ -349,7 +349,7 @@ if has_l1_rules and len(association_rules_l1) > 0:
 """
 else:
     # 有粗粒度频繁项集但无规则
-    l1_fi_path = 'result/models/frequent_itemsets_l1.csv'
+    l1_fi_path = '../result/models/frequent_itemsets_l1.csv'
     if os.path.exists(l1_fi_path):
         l1_fi = pd.read_csv(l1_fi_path)
         l1_fi_table = ""
@@ -684,7 +684,7 @@ report_content = f"""# 第二步：用户数据与商品关联规则分析报告
 import pickle
 import numpy as np
 
-with open('result/models/kmeans_model.pkl', 'rb') as f:
+with open('../result/models/kmeans_model.pkl', 'rb') as f:
     model_data = pickle.load(f)
 
 kmeans = model_data['model']
@@ -700,10 +700,10 @@ n_single_clusters = model_data['metadata'].get('n_single_clusters', 3)
 import pandas as pd
 import os
 
-rules = pd.read_csv('result/models/association_rules.csv')
+rules = pd.read_csv('../result/models/association_rules.csv')
 
 # 粗粒度规则（仅在存在时读取）
-l1_path = 'result/models/association_rules_l1.csv'
+l1_path = '../result/models/association_rules_l1.csv'
 rules_l1 = pd.read_csv(l1_path) if os.path.exists(l1_path) else pd.DataFrame()
 ```
 
@@ -712,7 +712,7 @@ rules_l1 = pd.read_csv(l1_path) if os.path.exists(l1_path) else pd.DataFrame()
 ```python
 import pandas as pd
 
-profiles = pd.read_csv('result/models/cluster_profiles_business.csv', index_col=0)
+profiles = pd.read_csv('../result/models/cluster_profiles_business.csv', index_col=0)
 print(profiles)
 ```
 
@@ -737,7 +737,7 @@ print(profiles)
 """
 
 # 保存报告
-report_path = 'result/reports/step2_analysis_report.md'
+report_path = '../result/reports/step2_analysis_report.md'
 with open(report_path, 'w', encoding='utf-8') as f:
     f.write(report_content)
 print(f"[OK] 报告已保存: {report_path}")
@@ -864,8 +864,8 @@ for _, row in frequent_itemsets.iterrows():
 
 # 粗粒度频繁项集 JSON
 frequent_itemsets_l1_json = []
-if os.path.exists('result/models/frequent_itemsets_l1.csv'):
-    _fi_l1 = pd.read_csv('result/models/frequent_itemsets_l1.csv')
+if os.path.exists('../result/models/frequent_itemsets_l1.csv'):
+    _fi_l1 = pd.read_csv('../result/models/frequent_itemsets_l1.csv')
     for _, row in _fi_l1.iterrows():
         frequent_itemsets_l1_json.append({
             'itemsets': str(row['itemsets']),
@@ -1022,7 +1022,7 @@ summary = {
 
 summary = convert_numpy_types(summary)
 
-json_path = 'result/reports/analysis_summary.json'
+json_path = '../result/reports/analysis_summary.json'
 with open(json_path, 'w', encoding='utf-8') as f:
     json.dump(summary, f, ensure_ascii=False, indent=2)
 print(f"[OK] JSON 摘要已保存: {json_path}")
@@ -1154,7 +1154,7 @@ result/
 *README 生成时间：{datetime.now().strftime('%Y-%m-%d')}*
 """
 
-readme_path = 'result/README.md'
+readme_path = '../result/README.md'
 with open(readme_path, 'w', encoding='utf-8') as f:
     f.write(readme_content)
 print(f"[OK] README 已保存: {readme_path}")

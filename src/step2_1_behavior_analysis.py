@@ -15,14 +15,14 @@ plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'Arial Unicode M
 plt.rcParams['axes.unicode_minus'] = False
 
 # 创建输出目录
-os.makedirs('result/figures', exist_ok=True)
+os.makedirs('../result/figures', exist_ok=True)
 
 # ==================== 1. 读取数据 ====================
 print("=" * 50)
 print("1. 读取数据")
 print("=" * 50)
 
-df = pd.read_csv("Datasets/processed/preprocessed.csv")
+df = pd.read_csv("../Datasets/processed/preprocessed.csv")
 print(f"数据形状: {df.shape}")
 print(f"列名: {df.columns.tolist()}")
 print(f"\n数据类型:\n{df.dtypes}")
@@ -75,7 +75,7 @@ for bar, rate in zip(bars2, funnel_data['转化率']):
                 f'{rate}%', ha='center', va='bottom', fontsize=11)
 
 plt.tight_layout()
-plt.savefig('result/figures/funnel_analysis.png', dpi=150, bbox_inches='tight')
+plt.savefig('../result/figures/funnel_analysis.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("\n[OK] funnel_analysis.png saved")
 
@@ -131,7 +131,7 @@ axes[1, 1].legend()
 axes[1, 1].set_xticks(range(0, 24))
 
 plt.tight_layout()
-plt.savefig('result/figures/time_distribution.png', dpi=150, bbox_inches='tight')
+plt.savefig('../result/figures/time_distribution.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("\n[OK] time_distribution.png saved")
 
@@ -179,7 +179,7 @@ if 'view' in category_funnel.columns and 'purchase' in category_funnel.columns:
     axes[1, 1].invert_yaxis()
 
 plt.tight_layout()
-plt.savefig('result/figures/category_ranking.png', dpi=150, bbox_inches='tight')
+plt.savefig('../result/figures/category_ranking.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("\n[OK] category_ranking.png saved")
 
@@ -218,7 +218,7 @@ if 'conversion_rate' in price_funnel.columns:
     axes[1].tick_params(axis='x', rotation=45)
 
 plt.tight_layout()
-plt.savefig('result/figures/price_analysis.png', dpi=150, bbox_inches='tight')
+plt.savefig('../result/figures/price_analysis.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("\n[OK] price_analysis.png saved")
 
@@ -310,7 +310,7 @@ axes[2].set_xlabel('购买次数')
 axes[2].set_ylabel('用户数')
 
 plt.tight_layout()
-plt.savefig('result/figures/user_statistics.png', dpi=150, bbox_inches='tight')
+plt.savefig('../result/figures/user_statistics.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("[OK] user_statistics.png saved")
 
@@ -344,8 +344,8 @@ hot_products['conversion_rate'] = round(
 # 按浏览量排序
 hot_products = hot_products.sort_values('view_count', ascending=False)
 
-os.makedirs('result/models', exist_ok=True)
-hot_products_path = 'result/models/hot_products.csv'
+os.makedirs('../result/models', exist_ok=True)
+hot_products_path = '../result/models/hot_products.csv'
 hot_products.to_csv(hot_products_path)
 print(f"[OK] 商品热度排行已保存: {hot_products_path}")
 print(f"  - 商品总数: {len(hot_products):,}")
